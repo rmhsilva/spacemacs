@@ -46,17 +46,19 @@ variable =erc-server-list=. Setting =:ssl= non nil will connect with =erc-tls=.
 You can also use =<leader>aiD= to connect to your default servers outside the
 custom layout.
 
+*Note:* the `:port` keyword must be an integer, not a string.
+
 #+BEGIN_SRC emacs-lisp
 (setq-default dotspacemacs-configuration-layers
              '((erc :variables
                     erc-server-list
                     '(("irc.freenode.net"
-                       :port "6697"
+                       :port 6697
                        :ssl t
                        :nick "some-user"
                        :password "secret")
                       ("irc.myworkirc.net"
-                       :port "1234"
+                       :port 1234
                        :nick "some-suit"
                        :password "hunter2")))))
 #+END_SRC
