@@ -18,12 +18,18 @@
                                              'flycheck)))
         ggtags
         helm-gtags
+        exec-path-from-shell
         go-eldoc
         go-mode
         go-guru
-        (go-rename :location local)
+        go-rename
+        popwin
         ))
 
+
+(defun go/post-init-popwin ()
+  (push (cons go-test-buffer-name '(:dedicated t :position bottom :stick t :noselect t :height 0.4))
+        popwin:special-display-config))
 
 (defun go/init-company-go ()
   (use-package company-go
@@ -35,14 +41,16 @@
       :variables company-go-show-annotation t)))
 
 (defun go/post-init-flycheck ()
-  (spacemacs/add-flycheck-hook 'go-mode))
+  (spacemacs/enable-flycheck 'go-mode))
+
+(defun go/pre-init-exec-path-from-shell ()
+  (spacemacs|use-package-add-hook exec-path-from-shell
+    :pre-config
+    (dolist (var '("GOPATH" "GO15VENDOREXPERIMENT") exec-path-from-shell-variables)
+      (unless (or (member var exec-path-from-shell-variables) (getenv var))
+        (push var exec-path-from-shell-variables)))))
 
 (defun go/init-go-mode()
-  (when (memq window-system '(mac ns x))
-    (dolist (var '("GOPATH" "GO15VENDOREXPERIMENT"))
-      (unless (getenv var)
-        (exec-path-from-shell-copy-env var))))
-
   (use-package go-mode
     :defer t
     :init
@@ -57,8 +65,7 @@
 
       (defun spacemacs/go-run-tests (args)
         (interactive)
-        (save-selected-window
-          (async-shell-command (concat "go test " args))))
+        (compilation-start (concat "go test " args) nil (lambda (n) go-test-buffer-name) nil))
 
       (defun spacemacs/go-run-package-tests ()
         (interactive)
@@ -76,7 +83,7 @@
                                  "-run")))
               (save-excursion
                   (re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?[[:alnum:]]+)[ ]+\\)?\\(Test[[:alnum:]_]+\\)(.*)")
-                  (spacemacs/go-run-tests (concat test-method "='" (match-string-no-properties 2) "'"))))
+                  (spacemacs/go-run-tests (concat test-method "='" (match-string-no-properties 2) "$'"))))
           (message "Must be in a _test.go file to run go-run-test-current-function")))
 
       (defun spacemacs/go-run-test-current-suite ()
@@ -93,7 +100,7 @@
         (interactive)
         (shell-command
           (format "go run %s"
-                  (shell-quote-argument (buffer-file-name)))))
+                  (shell-quote-argument (buffer-file-name (buffer-base-buffer))))))
 
       (spacemacs/declare-prefix-for-mode 'go-mode "me" "playground")
       (spacemacs/declare-prefix-for-mode 'go-mode "mg" "goto")

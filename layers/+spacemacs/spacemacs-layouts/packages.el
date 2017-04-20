@@ -108,12 +108,12 @@
 
 (defun spacemacs-layouts/init-persp-mode ()
   (use-package persp-mode
-    :diminish persp-mode
     :init
     (progn
       (setq persp-auto-resume-time (if (or dotspacemacs-auto-resume-layouts
                                            spacemacs-force-resume-layouts)
                                        1 -1)
+            persp-is-ibc-as-f-supported nil
             persp-nil-name dotspacemacs-default-layout-name
             persp-reset-windows-on-nil-window-conf nil
             persp-set-last-persp-for-new-frames nil
@@ -203,6 +203,7 @@
         (spacemacs/find-dotfile)))
     :config
     (progn
+      (spacemacs|hide-lighter persp-mode)
       (defadvice persp-activate (before spacemacs//save-toggle-layout activate)
         (setq spacemacs--last-selected-layout persp-last-persp-name))
       (add-hook 'persp-mode-hook 'spacemacs//layout-autosave)
@@ -210,7 +211,6 @@
       (spacemacs/declare-prefix "B" "global-buffers")
       ;; Override SPC TAB to only change buffers in perspective
       (spacemacs/set-leader-keys
-        "TAB"  'spacemacs/alternate-buffer-in-persp
         "ba"   'persp-add-buffer
         "br"   'persp-remove-buffer))))
 

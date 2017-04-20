@@ -11,8 +11,6 @@
 ##
 ## License: GPLv3
 
-tests=("core")
-
 if [ $USER != "travis" ]; then
     echo "This script is not designed to run locally."
     echo "Instead, navigate to the appropriate test folder and run make there instead."
@@ -20,23 +18,39 @@ if [ $USER != "travis" ]; then
 fi
 
 if  [ $TRAVIS_SECURE_ENV_VARS = false ] &&
-    [ $TRAVIS_PULL_REQUEST != false ] &&
-    [ $TRAVIS_BRANCH = "master" ]; then
-
-    	printf '=%.0s' {1..70}
-    	printf "\n       し(*･∀･)／   Thanks for the contribution!  ＼(･∀･*)ノ\n"
-    	printf '=%.0s' {1..70}
-    	printf "\n( ＾◡＾)っ Please submit your pull request against the develop branch.\n"
-    	echo   "You can read the contribution guidelines at:"
-    	echo   "https://github.com/syl20bnr/spacemacs/blob/develop/CONTRIBUTING.org"
-    	exit 1
+        [ $TRAVIS_PULL_REQUEST != false ] &&
+        [ $TRAVIS_BRANCH = "master" ]; then
+    printf '=%.0s' {1..70}
+    printf "\n       し(*･∀･)／   Thanks for the contribution!  ＼(･∀･*)ノ\n"
+    printf '=%.0s' {1..70}
+    printf "\n( ＾◡＾)っ Please submit your pull request against the develop branch.\n"
+    echo   "You can read the contribution guidelines at:"
+    echo   "https://github.com/syl20bnr/spacemacs/blob/develop/CONTRIBUTING.org"
+    exit 1
 fi
+
+if [ "${FORMATTING}" = "space-test" ]; then
+	cd "${TRAVIS_BUILD_DIR}"
+	echo "Testing for trailing and all sorts of broken white spaces"
+	echo "TRAVIS_COMMIT_RANGE: ${TRAVIS_COMMIT_RANGE}"
+	first_commit=`echo ${TRAVIS_COMMIT_RANGE} | sed -r 's/\..*//'`
+	git reset -q "${first_commit}"
+	git diff --check --color > space_test_result
+	if [[ -s space_test_result ]]; then
+		cat space_test_result
+		exit 1
+	fi
+	echo "No bad spaces detected"
+	exit 0
+fi
+
+# Emacs tests
 
 echo "Pwd $(pwd)"
 rm -rf ~/.emacs.d
 ln -sf `pwd` ~/.emacs.d
 
-for test in "${tests[@]}"; do
+for test in "${TESTS[@]}"; do
     rm -rf ~/.emacs.d/elpa
     rm -rf ~/.emacs.d/.cache
     rm -f ~/.spacemacs

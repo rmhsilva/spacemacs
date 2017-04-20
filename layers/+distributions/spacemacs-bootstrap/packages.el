@@ -42,6 +42,7 @@
 
 (defun spacemacs-bootstrap/init-evil ()
   ;; ensure that the search module is set at startup
+  ;; must be called before evil is required to really take effect.
   (spacemacs/set-evil-search-module dotspacemacs-editing-style)
   (add-hook 'spacemacs-editing-style-hook 'spacemacs/set-evil-search-module)
 
@@ -248,6 +249,10 @@
   (spacemacs|define-text-object "-" "hyphen" "-" "-")
   (spacemacs|define-text-object "~" "tilde" "~" "~")
   (spacemacs|define-text-object "=" "equal" "=" "=")
+  (spacemacs|define-text-object "«" "double-angle-bracket" "«" "»")
+  (spacemacs|define-text-object "｢" "corner-bracket" "｢" "｣")
+  (spacemacs|define-text-object "‘" "single-quotation-mark" "‘" "’")
+  (spacemacs|define-text-object "“" "double-quotation-mark" "“" "”")
   (evil-define-text-object evil-pasted (count &rest args)
     (list (save-excursion (evil-goto-mark ?\[) (point))
           (save-excursion (evil-goto-mark ?\]) (point))))
@@ -283,7 +288,11 @@
       (kbd "C-j") 'comint-next-input))
   (evil-define-key 'normal comint-mode-map
     (kbd "C-k") 'comint-previous-input
-    (kbd "C-j") 'comint-next-input))
+    (kbd "C-j") 'comint-next-input)
+
+  ;; ignore repeat
+  (evil-declare-ignore-repeat 'spacemacs/next-error)
+  (evil-declare-ignore-repeat 'spacemacs/previous-error))
 
 (defun spacemacs-bootstrap/init-hydra ()
   (require 'hydra)

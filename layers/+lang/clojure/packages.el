@@ -124,7 +124,7 @@
           "fb" 'cider-format-buffer
 
           "gb" 'cider-pop-back
-          "gC" 'cider-classpath
+          "gc" 'cider-classpath
           "ge" 'cider-jump-to-compilation-error
           "gr" 'cider-jump-to-resource
           "gn" 'cider-browse-ns
@@ -170,7 +170,7 @@
 
           "db" 'cider-debug-defun-at-point
           "de" 'spacemacs/cider-display-error-buffer
-          "di" 'cider-inspect
+          "dv" 'cider-inspect
 
           ;; refactorings from clojure-mode
           "rc{" 'clojure-convert-collection-to-map

@@ -59,7 +59,8 @@ A COUNT argument matches the indentation to the next COUNT lines."
 ;; from Prelude
 ;; TODO: dispatch these in the layers
 (defvar spacemacs-indent-sensitive-modes
-  '(coffee-mode
+  '(asm-mode
+    coffee-mode
     elm-mode
     haml-mode
     haskell-mode
@@ -295,11 +296,11 @@ projectile cache when it's possible and update recentf list."
   "Renames current buffer and file it is visiting."
   (interactive)
   (let* ((name (buffer-name))
-        (filename (buffer-file-name))
-        (dir (file-name-directory filename)))
+        (filename (buffer-file-name)))
     (if (not (and filename (file-exists-p filename)))
         (error "Buffer '%s' is not visiting a file!" name)
-      (let ((new-name (read-file-name "New name: " dir)))
+      (let* ((dir (file-name-directory filename))
+             (new-name (read-file-name "New name: " dir)))
         (cond ((get-buffer new-name)
                (error "A buffer named '%s' already exists!" new-name))
               (t
@@ -491,11 +492,45 @@ If the universal prefix argument is used then will the windows too."
   (ediff-files (dotspacemacs/location)
                (concat dotspacemacs-template-directory ".spacemacs.template")))
 
-(defun spacemacs/new-empty-buffer ()
-  "Create a new buffer called untitled(<n>)"
+(defun spacemacs/new-empty-buffer (&optional split)
+  "Create a new buffer called untitled(<n>).
+A SPLIT argument with the value: `left',
+`below', `above' or `right', opens the new
+buffer in a split window."
   (interactive)
   (let ((newbuf (generate-new-buffer-name "untitled")))
-    (switch-to-buffer newbuf)))
+    (case split
+      ('left  (split-window-horizontally))
+      ('below (spacemacs/split-window-vertically-and-switch))
+      ('above (split-window-vertically))
+      ('right (spacemacs/split-window-horizontally-and-switch)))
+    ;; pass non-nil force-same-window to prevent `switch-to-buffer' from
+    ;; displaying buffer in another window
+    (switch-to-buffer newbuf nil 'force-same-window)))
+
+(defun spacemacs/new-empty-buffer-left ()
+  "Create a new buffer called untitled(<n>),
+in a split window to the left."
+  (interactive)
+  (spacemacs/new-empty-buffer 'left))
+
+(defun spacemacs/new-empty-buffer-below ()
+  "Create a new buffer called untitled(<n>),
+in a split window below."
+  (interactive)
+  (spacemacs/new-empty-buffer 'below))
+
+(defun spacemacs/new-empty-buffer-above ()
+  "Create a new buffer called untitled(<n>),
+in a split window above."
+  (interactive)
+  (spacemacs/new-empty-buffer 'above))
+
+(defun spacemacs/new-empty-buffer-right ()
+  "Create a new buffer called untitled(<n>),
+in a split window to the right."
+  (interactive)
+  (spacemacs/new-empty-buffer 'right))
 
 ;; from https://gist.github.com/timcharper/493269
 (defun spacemacs/split-window-vertically-and-switch ()
@@ -772,6 +807,10 @@ the right."
 (spacemacs|create-align-repeat-x "bar" "|")
 (spacemacs|create-align-repeat-x "left-paren" "(")
 (spacemacs|create-align-repeat-x "right-paren" ")" t)
+(spacemacs|create-align-repeat-x "left-curly-brace" "{")
+(spacemacs|create-align-repeat-x "right-curly-brace" "}" t)
+(spacemacs|create-align-repeat-x "left-square-brace" "\\[")
+(spacemacs|create-align-repeat-x "right-square-brace" "\\]" t)
 (spacemacs|create-align-repeat-x "backslash" "\\\\")
 
 ;; END align functions
@@ -841,16 +880,24 @@ A non-nil argument sorts in reverse order."
   (spacemacs/sort-lines -1))
 
 (defun spacemacs/sort-lines-by-column (&optional reverse)
-  "Sort lines by the selected column.
-A non-nil argument sorts in reverse order."
+  "Sort lines by the selected column,
+using a visual block/rectangle selection.
+A non-nil argument sorts in REVERSE order."
   (interactive "P")
-  (let* ((region-active (or (region-active-p) (evil-visual-state-p)))
-         (beg (if region-active (region-beginning) (point-min)))
-         (end (if region-active (region-end) (point-max))))
-    (sort-columns reverse beg end)))
+  (if (and
+       ;; is there an active selection
+       (or (region-active-p) (evil-visual-state-p))
+       ;; is it a block or rectangle selection
+       (or (eq evil-visual-selection 'block) (eq rectangle-mark-mode t))
+       ;; is the selection height 2 or more lines
+       (>= (1+ (- (line-number-at-pos (region-end))
+                  (line-number-at-pos (region-beginning)))) 2))
+      (sort-columns reverse (region-beginning) (region-end))
+    (error "Sorting by column requires a block/rect selection on 2 or more lines.")))
 
 (defun spacemacs/sort-lines-by-column-reverse ()
-  "Sort lines by the selected column in reverse order."
+"Sort lines by the selected column in reverse order,
+using a visual block/rectangle selection."
   (interactive)
   (spacemacs/sort-lines-by-column -1))
 
@@ -1049,10 +1096,7 @@ Decision is based on `dotspacemacs-line-numbers'."
        (spacemacs//linum-current-buffer-is-not-special)
        (spacemacs//linum-curent-buffer-is-not-too-big)
        (or (spacemacs//linum-backward-compabitility)
-           ;; explicitly enabled buffers take priority over explicitly disabled
-           ;; ones
-           (or (spacemacs//linum-enabled-for-current-major-mode)
-               (not (spacemacs//linum-disabled-for-current-major-mode))))))
+           (spacemacs//linum-enabled-for-current-major-mode))))
 
 (defun spacemacs//linum-on (origfunc &rest args)
   "Advice function to improve `linum-on' function."
@@ -1088,14 +1132,31 @@ Decision is based on `dotspacemacs-line-numbers'."
                (* 1000 (car (spacemacs/mplist-get dotspacemacs-line-numbers
                                                   :size-limit-kb)))))))
 
+;; mode in :enabled, not in :disabled ==> t
+;; mode not in :enabled, in :disabled ==> nil
+;; mode in :enabled, parent in :disabled ==> t
+;; parent in :enabled, mode in :disabled ==> nil
+;; not in :enabled, not in :disabled, :enabled is empty ==> t
+;; not in :enabled, not in :disabled, :enabled is not empty ==> nil
+;; both :enabled and :disabled are empty ==> t
 (defun spacemacs//linum-enabled-for-current-major-mode ()
   "Return non-nil if line number is enabled for current major-mode."
-  (let ((modes (spacemacs/mplist-get dotspacemacs-line-numbers
-                                     :enabled-for-modes)))
-    (memq major-mode modes)))
-
-(defun spacemacs//linum-disabled-for-current-major-mode ()
-  "Return non-nil if line number is disabled for current major-mode."
-  (let ((modes (spacemacs/mplist-get dotspacemacs-line-numbers
-                                     :disabled-for-modes)))
-    (memq major-mode modes)))
+  (let* ((enabled-for-modes (spacemacs/mplist-get dotspacemacs-line-numbers
+                                                  :enabled-for-modes))
+         (disabled-for-modes (spacemacs/mplist-get dotspacemacs-line-numbers
+                                                   :disabled-for-modes))
+         (enabled-for-parent (apply #'derived-mode-p enabled-for-modes))
+         (disabled-for-parent (apply #'derived-mode-p disabled-for-modes)))
+    (or
+     ;; current mode or a parent is in :enabled-for-modes, and there isn't a
+     ;; more specific parent (or the mode itself) in :disabled-for-modes
+     (and enabled-for-parent
+          ;; handles the case where current major-mode has a parent both in
+          ;; :enabled-for-modes and in :disabled-for-modes. Return non-nil if
+          ;; enabled-for-parent is the more specific parent (IOW doesn't derive
+          ;; from disabled-for-parent)
+          (not (spacemacs/derived-mode-p enabled-for-parent disabled-for-parent)))
+     ;; current mode (or parent) not explicitly disabled, and :enabled-for-modes
+     ;; not explicitly specified by user (meaning if it isn't explicitly
+     ;; disabled then it's enabled)
+     (and (null enabled-for-modes) (not disabled-for-parent)))))

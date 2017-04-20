@@ -107,12 +107,16 @@
   (use-package evil-mc
     :defer t
     :init
-    ;; remove emc prefix when there is not multiple cursors
-    (setq evil-mc-mode-line
-          `(:eval (when (> (evil-mc-get-cursor-count) 1)
-                    (format ,(propertize " %s:%d" 'face 'cursor)
-                            evil-mc-mode-line-prefix
-                            (evil-mc-get-cursor-count)))))))
+    (progn
+      ;; evil-mc is not compatible with the paste transient state
+      (define-key evil-normal-state-map "p" 'spacemacs/evil-mc-paste-after)
+      (define-key evil-normal-state-map "P" 'spacemacs/evil-mc-paste-before)
+      ;; remove emc prefix when there is not multiple cursors
+      (setq evil-mc-mode-line
+            `(:eval (when (> (evil-mc-get-cursor-count) 1)
+                      (format ,(propertize " %s:%d" 'face 'cursor)
+                              evil-mc-mode-line-prefix
+                              (evil-mc-get-cursor-count))))))))
 
 ;; other commenting functions in funcs.el with keybinds in keybindings.el
 (defun spacemacs-evil/init-evil-nerd-commenter ()
@@ -192,7 +196,7 @@
         ("+" evil-numbers/inc-at-pt)
         ("=" evil-numbers/inc-at-pt)
         ("-" evil-numbers/dec-at-pt)
-        ("q" nil :exit t)) 
+        ("q" nil :exit t))
       (spacemacs/set-leader-keys
         "n+" 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt
         "n=" 'spacemacs/evil-numbers-transient-state/evil-numbers/inc-at-pt

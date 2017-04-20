@@ -57,12 +57,19 @@ Available PROPS:
 `:from SYMBOL'
     Advanced property aimed at avoiding hook function name conflicts when
     `:variables' property is used in several calls to this macro for the same
-    MODES."
+    MODES.
+
+`:hook BOOLEAN'
+    Advanced property to control whether hooks functions are hooked or not,
+    if non-nil hook functions are appended to modes hooks passed as `:modes'."
   (declare (indent 0))
   (let* ((backends (spacemacs/mplist-get props :backends))
          (modes (spacemacs/mplist-get props :modes))
          (variables (spacemacs/mplist-get props :variables))
          (from (plist-get props :from))
+         (hooks (if (memq :hooks props)
+                    (plist-get props :hooks)
+                  t))
          (result '(progn)))
     (dolist (mode modes)
       (let ((backends-var-name (intern (format "company-backends-%S" mode)))
@@ -73,7 +80,7 @@ Available PROPS:
             (mode-hook-name (intern (format "%S-hook" mode))))
         ;; declare buffer local company-backends variable
         (push `(defvar ,backends-var-name
-                 ',spacemacs-default-company-backends
+                 spacemacs-default-company-backends
                  ,(format "Company backend list for %S." mode)) result)
         ;; add backends
         (dolist (backend backends)
@@ -89,7 +96,8 @@ Available PROPS:
                      'company)
                 (set (make-variable-buffer-local 'company-backends)
                      ,backends-var-name)) result)
-        (push `(add-hook ',mode-hook-name ',init-func-name t) result)
+        (when hooks
+          (push `(add-hook ',mode-hook-name ',init-func-name t) result))
         ;; define variables hook function
         (when variables
           (let ((vars-func `(defun ,vars-func-name ()
@@ -104,8 +112,10 @@ Available PROPS:
                               ,(eval (pop variables))))))
                 (when forms (push forms vars))))
             (push (append vars-func vars) result))
-          (push `(add-hook ',mode-hook-name ',vars-func-name t) result))
-        (push `(add-hook ',mode-hook-name 'company-mode t) result)))
+          (when hooks
+            (push `(add-hook ',mode-hook-name ',vars-func-name t) result)))
+        (when hooks
+          (push `(add-hook ',mode-hook-name 'company-mode t) result))))
     ;; return the expanded macro in correct order
     (reverse result)))
 

@@ -72,12 +72,11 @@
       "h:" 'alchemist-help
       "hH" 'alchemist-help-history
       "hh" 'alchemist-help-search-at-point
-      "hr" 'alchemist-help-search-marked-region
+      "hr" 'alchemist-help--search-marked-region
 
       "m:" 'alchemist-mix
       "mc" 'alchemist-mix-compile
       "mx" 'alchemist-mix-run
-      "mh" 'alchemist-mix-help
 
       "'"  'alchemist-iex-run
       "sc" 'alchemist-iex-compile-this-buffer
@@ -92,9 +91,9 @@
       "ta" 'alchemist-mix-test
       "tb" 'alchemist-mix-test-this-buffer
       "tt" 'alchemist-mix-test-at-point
-      "tf" 'alchemist-test-file
-      "tn" 'alchemist-test-jump-to-next-test
-      "tp" 'alchemist-test-jump-to-previous-test
+      "tf" 'alchemist-mix-test-file
+      "tn" 'alchemist-test-mode-jump-to-next-test
+      "tp" 'alchemist-test-mode-jump-to-previous-test
       "tr" 'alchemist-mix-rerun-last-test
 
       "xb" 'alchemist-execute-this-buffer
@@ -141,7 +140,7 @@
     :defer t))
 
 (defun elixir/post-init-flycheck ()
-  (spacemacs/add-flycheck-hook 'elixir-mode))
+  (spacemacs/enable-flycheck 'elixir-mode))
 
 (defun elixir/pre-init-org ()
   (spacemacs|use-package-add-hook org

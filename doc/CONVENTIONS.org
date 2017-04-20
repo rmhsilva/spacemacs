@@ -216,7 +216,7 @@ Note: we don't distinguish between the file and the buffer. We can
 implement an auto-save of the buffer before compiling the buffer.
 
 ** Debugging
-The base prefix for debugging commands is ~SPC d~.
+The base prefix for debugging commands is ~SPC m d~.
 
 | Key Binding | Description             |
 |-------------+-------------------------|
@@ -225,11 +225,12 @@ The base prefix for debugging commands is ~SPC d~.
 | ~m d B~     | clear all breakpoints   |
 | ~m d c~     | continue                |
 | ~m d d~     | start debug session     |
-| ~m d i~     | inspect value at point  |
+| ~m d i~     | step in                 |
 | ~m d l~     | local variables         |
-| ~m d n~     | next                    |
+| ~m d o~     | step out                |
 | ~m d r~     | run                     |
-| ~m d s~     | step                    |
+| ~m d s~     | next step               |
+| ~m d v~     | inspect value at point  |
 
 Notes:
   - Ideally a transient-state for breakpoint navigation should be provided.
@@ -351,7 +352,7 @@ Major-mode code formatting is under prefix ~SPC m =~.
 | ~m = f~     | format current function  |
 
 ** Help or Documentation
-The base prefix for help commands is ~SPC h~. Documentation is considered
+The base prefix for help commands is ~SPC m h~. Documentation is considered
 as an help command.
 
 | Key     | Description                        |
