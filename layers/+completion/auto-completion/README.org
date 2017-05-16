@@ -14,7 +14,7 @@
    - [[#add-auto-completion-in-a-layer][Add auto-completion in a layer]]
    - [[#completion-back-ends][Completion back ends]]
    - [[#improved-faces][Improved faces]]
- - [[#key-bindings-1][Key Bindings]]
+ - [[#key-bindings][Key Bindings]]
    - [[#company][Company]]
    - [[#auto-complete][Auto-complete]]
    - [[#yasnippet][Yasnippet]]
@@ -230,7 +230,7 @@ Emacs style:
 | ~C-k~       | select previous candidate                                            |
 | ~TAB~       | expand selection or select next candidate                            |
 | ~S-TAB~     | select previous candidate                                            |
-| ~return~    | complete word, if word is already completed insert a carriage return |
+| ~RET~       | complete word, if word is already completed insert a carriage return |
 
 ** Yasnippet
 

@@ -46,11 +46,12 @@
     ;; add some functions to ahs transient states
     (setq spacemacs--symbol-highlight-transient-state-doc
           (concat spacemacs--symbol-highlight-transient-state-doc
-                  "  [_b_] search buffers [_/_] search proj [_f_] search files")
+                  "  [_b_] search buffers [_/_] search proj [_f_] search files [_s_] swoop")
      spacemacs-symbol-highlight-transient-state-add-bindings
      '(("/" spacemacs/helm-project-smart-do-search-region-or-symbol :exit t)
        ("b" spacemacs/helm-buffers-smart-do-search-region-or-symbol :exit t)
-       ("f" spacemacs/helm-files-smart-do-search-region-or-symbol :exit t)))))
+       ("f" spacemacs/helm-files-smart-do-search-region-or-symbol :exit t)
+       ("s" spacemacs/helm-swoop-region-or-symbol :exit t)))))
 
 (defun helm/post-init-bookmark ()
   (spacemacs/set-leader-keys "fb" 'helm-filtered-bookmarks))
@@ -249,7 +250,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         ;; --line-number forces line numbers (disabled by default on windows)
         ;; no --vimgrep because it adds column numbers that wgrep can't handle
         ;; see https://github.com/syl20bnr/spacemacs/pull/8065
-        (let ((helm-ag-base-command "rg --smart-case --no-heading --color never --line-number"))
+        (let ((helm-ag-base-command "rg --smart-case --no-heading --color never --line-number --max-columns 150"))
           (helm-do-ag dir)))
 
       (defun spacemacs/helm-files-do-rg-region-or-symbol ()
@@ -315,7 +316,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         ;; --line-number forces line numbers (disabled by default on windows)
         ;; no --vimgrep because it adds column numbers that wgrep can't handle
         ;; see https://github.com/syl20bnr/spacemacs/pull/8065
-        (let ((helm-ag-base-command "rg --smart-case --no-heading --color never --line-number"))
+        (let ((helm-ag-base-command "rg --smart-case --no-heading --color never --line-number --max-columns 150"))
           (helm-do-ag-buffers)))
 
       (defun spacemacs/helm-buffers-do-rg-region-or-symbol ()

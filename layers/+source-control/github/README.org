@@ -36,6 +36,8 @@ You will need to generate a [[https://github.com/settings/tokens][personal acces
 have the =gist= and =repo= permissions. Once this token is created, it needs to
 be added to your =~/.gitconfig=
 
+You will also need to [[https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/][generate an SSH key]] and [[https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/][add it to your GitHub account]].
+
 #+BEGIN_SRC sh
   git config --global github.oauth-token <token>
 #+END_SRC
@@ -64,13 +66,13 @@ possible.
 
 ** magithub
 
-| Key Binding | Description                                                 |
-|-------------+-------------------------------------------------------------|
-| ~@ H~       | opens the current repository in the browser                 |
-| ~@ c~       | pushes a brand-new local repository up to GitHub            |
-| ~@ f~       | create a fork of an existing repository                     |
-| ~@ p~       | submit pull request upstream                                |
-| ~@ i~       | create an issue                                             |
+| Key Binding | Description                                      |
+|-------------+--------------------------------------------------|
+| ~@ H~       | opens the current repository in the browser      |
+| ~@ c~       | pushes a brand-new local repository up to GitHub |
+| ~@ f~       | create a fork of an existing repository          |
+| ~@ p~       | submit pull request upstream                     |
+| ~@ i~       | create an issue                                  |
 
 ** gist.el
 
