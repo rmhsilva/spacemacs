@@ -10,34 +10,34 @@
 ;;; License: GPLv3
 
 (setq org-packages
-  '(
-    company
-    company-emoji
-    emoji-cheat-sheet-plus
-    (evil-org :location local)
-    evil-surround
-    gnuplot
-    htmlize
-    mu4e
-    ;; ob, org and org-agenda are installed by `org-plus-contrib'
-    (ob :location built-in)
-    (org :location built-in)
-    (org-agenda :location built-in)
-    (org-expiry :location built-in)
-    (org-journal :toggle org-enable-org-journal-support)
-    org-download
-    ;; org-mime is installed by `org-plus-contrib'
-    (org-mime :location built-in)
-    org-pomodoro
-    org-present
-    (org-projectile :toggle (configuration-layer/package-usedp 'projectile))
-    (ox-twbs :toggle org-enable-bootstrap-support)
-    ;; use a for of ox-gfm to fix index generation
-    (ox-gfm :location (recipe :fetcher github :repo "syl20bnr/ox-gfm")
-            :toggle org-enable-github-support)
-    (ox-reveal :toggle org-enable-reveal-js-support)
-    persp-mode
-    ))
+      '(
+        company
+        company-emoji
+        emoji-cheat-sheet-plus
+        evil-org
+        evil-surround
+        gnuplot
+        htmlize
+        ;; ob, org and org-agenda are installed by `org-plus-contrib'
+        (ob :location built-in)
+        (org :location built-in)
+        (org-agenda :location built-in)
+        (org-brain :toggle (version<= "25" emacs-version))
+        (org-expiry :location built-in)
+        (org-journal :toggle org-enable-org-journal-support)
+        org-download
+        ;; org-mime is installed by `org-plus-contrib'
+        (org-mime :location built-in)
+        org-pomodoro
+        org-present
+        (org-projectile :depends projectile)
+        (ox-twbs :toggle org-enable-bootstrap-support)
+        ;; use a for of ox-gfm to fix index generation
+        (ox-gfm :location (recipe :fetcher github :repo "syl20bnr/ox-gfm")
+                :toggle org-enable-github-support)
+        (ox-reveal :toggle org-enable-reveal-js-support)
+        persp-mode
+        ))
 
 (defun org/post-init-company ()
   (spacemacs|add-company-backends :backends company-capf :modes org-mode))
@@ -50,15 +50,16 @@
 
 (defun org/init-evil-org ()
   (use-package evil-org
-    :commands (evil-org-mode evil-org-recompute-clocks)
-    :init (add-hook 'org-mode-hook 'evil-org-mode)
-    :config
+    :defer t
+    :init
     (progn
-      (evil-define-key 'normal evil-org-mode-map
-        "O" 'evil-open-above)
-      (spacemacs/set-leader-keys-for-major-mode 'org-mode
-        "Cg" 'evil-org-recompute-clocks)
-      (spacemacs|diminish evil-org-mode " ⓔ" " e"))))
+      (add-hook 'org-mode-hook 'spacemacs//evil-org-mode)
+      (setq evil-org-key-theme `(textobjects
+                                 navigation
+                                 additional
+                                 ,@(when org-want-todo-bindings '(todo)))))
+    :config
+    (spacemacs|diminish evil-org-mode " ⓔ" " e")))
 
 (defun org/post-init-evil-surround ()
   (defun spacemacs/add-org-surrounds ()
@@ -75,11 +76,6 @@
 (defun org/init-htmlize ()
   (use-package htmlize
     :defer t))
-
-(defun org/pre-init-mu4e ()
-  ;; Load org-mu4e when mu4e is actually loaded
-  (spacemacs|use-package-add-hook mu4e
-    :post-config (require 'org-mu4e nil 'noerror)))
 
 (defun org/init-ob ()
   (use-package ob
@@ -139,6 +135,8 @@
           "a" 'org-edit-src-abort
           "k" 'org-edit-src-abort))
 
+      (add-hook 'org-mode-hook 'dotspacemacs//prettify-spacemacs-docs)
+
       (let ((dir (configuration-layer/get-layer-local-dir 'org)))
         (setq org-export-async-init-file (concat dir "org-async-init.el")))
       (defmacro spacemacs|org-emphasize (fname char)
@@ -191,6 +189,7 @@ Will work on both org-mode and any mode that accepts plain html."
 
         "Tt" 'org-show-todo-tree
         "Ti" 'org-toggle-inline-images
+        "TT" 'org-todo
         "TV" 'space-doc-mode
         "Tx" 'org-toggle-latex-fragment
 
@@ -252,8 +251,10 @@ Will work on both org-mode and any mode that accepts plain html."
         "*" 'org-ctrl-c-star
         "RET" 'org-ctrl-c-ret
         "-" 'org-ctrl-c-minus
+        "#" 'org-update-statistics-cookies
+        ;; attachments
+        "A" 'org-attach
         ;; insertion
-        "ia" 'org-attach
         "id" 'org-insert-drawer
         "ie" 'org-set-effort
         "if" 'org-footnote-new
@@ -372,7 +373,7 @@ Headline^^            Visit entry^^               Filter^^                    Da
 --------^^---------   -----------^^------------   ------^^-----------------   ----^^-------------  -----------^^------  ----^^---------    -----^^------  -----^^-----------
 [_ht_] set status     [_SPC_] in other window     [_ft_] by tag               [_ds_] schedule      [_tf_] follow        [_vd_] day         [_cI_] in      [_gr_] reload
 [_hk_] kill           [_TAB_] & go to location    [_fr_] refine by tag        [_dd_] set deadline  [_tl_] log           [_vw_] week        [_cO_] out     [_._]  go to today
-[_hR_] refile         [_RET_] & del other windows [_fc_] by category          [_dt_] timestamp     [_ta_] archive       [_vt_] fortnight   [_cq_] cancel  [_gd_] go to date
+[_hr_] refile         [_RET_] & del other windows [_fc_] by category          [_dt_] timestamp     [_ta_] archive       [_vt_] fortnight   [_cq_] cancel  [_gd_] go to date
 [_hA_] archive        [_o_]   link                [_fh_] by top headline      [_+_]  do later      [_tr_] clock report  [_vm_] month       [_cj_] jump    ^^
 [_h:_] set tags       ^^                          [_fx_] by regexp            [_-_]  do earlier    [_td_] diaries       [_vy_] year        ^^             ^^
 [_hp_] set priority   ^^                          [_fd_] delete all filters   ^^                   ^^                   [_vn_] next span   ^^             ^^
@@ -386,7 +387,7 @@ Headline^^            Visit entry^^               Filter^^                    Da
       ("hA" org-agenda-archive-default)
       ("hk" org-agenda-kill)
       ("hp" org-agenda-priority)
-      ("hR" org-agenda-refile)
+      ("hr" org-agenda-refile)
       ("ht" org-agenda-todo)
 
       ;; Visit entry
@@ -454,6 +455,16 @@ Headline^^            Visit entry^^               Filter^^                    Da
       (kbd "M-RET") 'org-agenda-show-and-scroll-up
       (kbd "M-SPC") 'spacemacs/org-agenda-transient-state/body
       (kbd "s-M-SPC") 'spacemacs/org-agenda-transient-state/body)))
+
+(defun org/init-org-brain ()
+  (use-package org-brain
+    :defer t
+    :init
+    (progn
+      (spacemacs/set-leader-keys
+        "aob" 'org-brain-open
+        "aoB" 'org-brain-visualize)
+      (evil-set-initial-state 'org-brain-visualize-mode 'emacs))))
 
 (defun org/init-org-expiry ()
   (use-package org-expiry

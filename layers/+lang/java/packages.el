@@ -19,7 +19,7 @@
         ensime
         flycheck
         (flycheck-eclim :location local
-                        :toggle (configuration-layer/package-usedp 'flycheck))
+                        :depends flycheck)
         flyspell
         ggtags
         gradle-mode
@@ -109,6 +109,7 @@
         "pk" 'eclim-project-close
         "po" 'eclim-project-open
         "pp" 'eclim-project-mode
+        "pr" 'eclim-java-run-run
         "pu" 'eclim-project-update
         ;; refactor
         "rc" 'eclim-java-constructor
@@ -116,6 +117,7 @@
         "rf" 'eclim-java-format
         "ri" 'eclim-java-import-organize
         "rj" 'eclim-java-implement
+        "rn" 'eclim-java-new
         "rr" 'eclim-java-refactor-rename-symbol-at-point
         ;; test
         "tt" 'eclim-run-junit)
@@ -155,8 +157,7 @@
         (kbd "p") 'eclim-project-update
         (kbd "g") 'eclim-project-mode-refresh
         (kbd "R") 'eclim-project-rename
-        (kbd "q") 'eclim-quit-window)
-      )))
+        (kbd "q") 'eclim-quit-window))))
 
 (defun java/post-init-eldoc ()
   (add-hook 'java-mode-local-vars-hook #'spacemacs//java-setup-eldoc))
@@ -171,6 +172,12 @@
       (spacemacs/register-repl 'ensime 'ensime-inf-switch "ensime"))
     :config
     (progn
+      ;; This function was renamed in ensime. Usually we don't need to do this,
+      ;; but documentation recommends the stable version of ensime, so we must
+      ;; try to support it, too.
+      (unless (fboundp 'ensime-type-at-point)
+        (defalias 'ensime-type-at-point 'ensime-print-type-at-point))
+
       ;; key bindings
       (dolist (mode java--ensime-modes)
         (dolist (prefix '(("mb" . "build")

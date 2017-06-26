@@ -46,12 +46,12 @@
     ;; add some functions to ahs transient states
     (setq spacemacs--symbol-highlight-transient-state-doc
           (concat spacemacs--symbol-highlight-transient-state-doc
-                  "  [_b_] search buffers [_/_] search proj [_f_] search files [_s_] swoop")
-     spacemacs-symbol-highlight-transient-state-add-bindings
-     '(("/" spacemacs/helm-project-smart-do-search-region-or-symbol :exit t)
-       ("b" spacemacs/helm-buffers-smart-do-search-region-or-symbol :exit t)
-       ("f" spacemacs/helm-files-smart-do-search-region-or-symbol :exit t)
-       ("s" spacemacs/helm-swoop-region-or-symbol :exit t)))))
+                  "  [_b_] search buffers [_/_] search proj [_f_] search files [_s_] swoop"))
+    (spacemacs/transient-state-register-add-bindings 'symbol-highlight
+      '(("/" spacemacs/helm-project-smart-do-search-region-or-symbol :exit t)
+        ("b" spacemacs/helm-buffers-smart-do-search-region-or-symbol :exit t)
+        ("f" spacemacs/helm-files-smart-do-search-region-or-symbol :exit t)
+        ("s" spacemacs/helm-swoop-region-or-symbol :exit t)))))
 
 (defun helm/post-init-bookmark ()
   (spacemacs/set-leader-keys "fb" 'helm-filtered-bookmarks))
@@ -259,7 +259,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (spacemacs//helm-do-ag-region-or-symbol 'spacemacs/helm-files-do-rg))
 
       (defun spacemacs/helm-files-smart-do-search (&optional default-inputp)
-        "Search in opened buffers using `dotspacemacs-search-tools'.
+        "Search in files using `dotspacemacs-search-tools'.
 Search for a search tool in the order provided by `dotspacemacs-search-tools'
 If DEFAULT-INPUTP is non nil then the current region or symbol at point
 are used as default input."
@@ -270,8 +270,7 @@ are used as default input."
                                               default-inputp)))
 
       (defun spacemacs/helm-files-smart-do-search-region-or-symbol ()
-        "Search in opened buffers using `dotspacemacs-search-tools'.
-with default input.
+        "Search in files using `dotspacemacs-search-tools' with default input.
 Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (interactive)
         (spacemacs/helm-files-smart-do-search t))
@@ -643,6 +642,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
   (setq projectile-completion-system 'helm))
 
 (defun helm/post-init-persp-mode ()
-   (setq spacemacs-layouts-transient-state-add-bindings
-           '(("b" spacemacs/persp-helm-mini :exit t)
-             ("l" spacemacs/helm-perspectives :exit t))))
+  (spacemacs/transient-state-register-add-bindings 'layouts
+    '(("b" spacemacs/persp-helm-mini :exit t)
+      ("l" spacemacs/helm-perspectives :exit t))))

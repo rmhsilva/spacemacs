@@ -20,12 +20,12 @@
         git-link
         git-messenger
         git-timemachine
-        (helm-gitignore :toggle (configuration-layer/package-usedp 'helm))
+        (helm-gitignore :depends helm)
         magit
         magit-gitflow
         ;; not compatible with magit 2.1 at the time of release
         ;; magit-svn
-        orgit
+        (orgit :depends org)
         smeargle
         ))
 
@@ -127,6 +127,7 @@
       (spacemacs/set-leader-keys
         "gb"  'spacemacs/git-blame-micro-state
         "gc"  'magit-clone
+        "gff" 'magit-find-file
         "gfh" 'magit-log-buffer-file
         "gi"  'magit-init
         "gL"  'magit-list-repositories

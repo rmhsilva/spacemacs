@@ -15,8 +15,10 @@
 
 ;; We define prefix commands only for the sake of which-key
 (setq spacemacs/key-binding-prefixes '(("a"   "applications")
+                                       ("A"   "other applications")
                                        ("ai"  "irc")
                                        ("as"  "shells")
+                                       ("ay"  "ipython notebook")
                                        ("b"   "buffers")
                                        ("c"   "compile/comments")
                                        ("C"   "capture/colors")
@@ -25,6 +27,7 @@
                                        ("fC"  "files/convert")
                                        ("fe"  "emacs(spacemacs)")
                                        ("fv"  "variables")
+                                       ("F"   "frame")
                                        ("g"   "git/versions-control")
                                        ("h"   "help")
                                        ("hd"  "help-describe")
@@ -198,6 +201,16 @@
   "fvf" 'add-file-local-variable
   "fvp" 'add-file-local-variable-prop-line
   "fy" 'spacemacs/show-and-copy-buffer-filename)
+;; frame ----------------------------------------------------------------------
+(spacemacs/set-leader-keys
+  "Ff" 'find-file-other-frame
+  "Fc" 'delete-frame
+  "FC" 'delete-other-frames
+  "Fb" 'switch-to-buffer-other-frame
+  "FB" 'display-buffer-other-frame
+  "Fd" 'dired-other-frame
+  "Fo" 'other-frame
+  "Fn" 'make-frame)
 ;; help -----------------------------------------------------------------------
 (spacemacs/set-leader-keys
   "hdb" 'describe-bindings
@@ -292,6 +305,7 @@
   :documentation "Toggle display of backtrace when an error happens."
   :evil-leader "tD")
 (spacemacs|add-toggle fringe
+  :if (fboundp 'fringe-mode)
   :status (not (equal fringe-mode 0))
   :on (call-interactively 'fringe-mode)
   :off (fringe-mode 0)

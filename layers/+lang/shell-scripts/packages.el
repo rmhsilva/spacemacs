@@ -11,9 +11,10 @@
 
 (setq shell-scripts-packages
       '(
-        (company-shell :toggle (configuration-layer/package-usedp 'company))
+        (company-shell :depends company)
         fish-mode
         flycheck
+        flycheck-bashate
         ggtags
         helm-gtags
         insert-shebang
@@ -26,14 +27,19 @@
     :init
     (progn
       (spacemacs|add-company-backends
-        :backends company-shell
+        :backends (company-shell company-shell-env)
         :modes sh-mode)
       (spacemacs|add-company-backends
-        :backends (company-shell company-fish-shell)
+        :backends (company-shell company-shell-env company-fish-shell)
         :modes fish-mode))))
 
 (defun shell-scripts/post-init-flycheck ()
   (spacemacs/enable-flycheck 'sh-mode))
+
+(defun shell-scripts/init-flycheck-bashate ()
+  (use-package flycheck-bashate
+  :defer t
+  :init (add-hook 'sh-mode-hook 'flycheck-bashate-setup)))
 
 (defun shell-scripts/init-fish-mode ()
   (use-package fish-mode
