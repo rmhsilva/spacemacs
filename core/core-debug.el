@@ -136,12 +136,12 @@ seconds to load")
     (advice-add 'package-initialize
                 :around
                 (spacemacs||make-function-timer package-intialize))
-    (advice-add 'configuration-layer/sync
+    (advice-add 'configuration-layer/load
                 :around
-                (spacemacs||make-function-timer configuration-layer/sync))
-    ;; (advice-add 'configuration-layer/sync
+                (spacemacs||make-function-timer configuration-layer/load))
+    ;; (advice-add 'configuration-layer/load
     ;;             :around
-    ;;             (spacemacs||make-function-profiler configuration-layer/sync))
+    ;;             (spacemacs||make-function-profiler configuration-layer/load))
     (advice-add 'configuration-layer//configure-package
                 :around
                 (spacemacs||make-function-timer configuration-layer//configure-package)))
@@ -175,9 +175,9 @@ seconds to load")
    (display-graphic-p)
    dotspacemacs-distribution
    dotspacemacs-editing-style
-   (cond ((configuration-layer/layer-usedp 'helm)
+   (cond ((configuration-layer/layer-used-p 'helm)
           'helm)
-         ((configuration-layer/layer-usedp 'ivy)
+         ((configuration-layer/layer-used-p 'ivy)
           'ivy)
          (t 'helm))
    (pp-to-string dotspacemacs--configuration-layers-saved)
@@ -295,12 +295,8 @@ that the issue has been created successfully, you can close this buffer.
 
 (defun spacemacs//report-issue-done ()
   (interactive)
-  (let ((url "http://github.com/syl20bnr/spacemacs/issues/new?body="))
-    (setq url (url-encode-url (concat url (buffer-string))))
-    ;; HACK: encode some characters according to HTML URL Encoding Reference
-    ;; http://www.w3schools.com/tags/ref_urlencode.asp
-    (setq url (replace-regexp-in-string "#" "%23" url))
-    (setq url (replace-regexp-in-string ";" "%3B" url))
-    (browse-url url)))
+  (let ((url "http://github.com/syl20bnr/spacemacs/issues/new?body=")
+        (body (url-hexify-string (buffer-string))))
+    (browse-url (url-encode-url (concat url body)))))
 
 (provide 'core-debug)

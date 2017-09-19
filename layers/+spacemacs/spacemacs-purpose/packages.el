@@ -11,12 +11,12 @@
 
 (setq spacemacs-purpose-packages
       '(eyebrowse
-        (helm-purpose :toggle (configuration-layer/layer-usedp 'helm))
-        (ivy-purpose :toggle (configuration-layer/layer-usedp 'ivy))
+        (helm-purpose :requires helm)
+        (ivy-purpose :requires ivy)
         popwin
         (spacemacs-purpose-popwin
          :location local
-         :depends popwin)
+         :requires popwin)
         window-purpose))
 
 (defun spacemacs-purpose/pre-init-eyebrowse ()
@@ -82,7 +82,13 @@
                              do (purpose-set-window-purpose-dedicated-p
                                  window t))))
       (add-hook 'purpose-mode-hook #'spacemacs/window-purpose-sync-popwin)
-      (spacemacs/window-purpose-sync-popwin))))
+      (spacemacs/window-purpose-sync-popwin)
+      ;; can't have both `purpose-mode' and `popwin-mode' active at the same
+      ;; time (see https://github.com/syl20bnr/spacemacs/issues/9593), but we
+      ;; use `popwin' for its configuration so we can't just exclude it, so
+      ;; current solution is to disable `popwin-mode' (which is enabled in
+      ;; popwin's :config block)
+      (popwin-mode -1))))
 
 (defun spacemacs-purpose/init-spacemacs-purpose-popwin ()
   (use-package spacemacs-purpose-popwin

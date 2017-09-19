@@ -13,18 +13,16 @@
       '(
         company
         (company-emacs-eclim :toggle
-                             (configuration-layer/package-usedp 'company))
+                             (configuration-layer/package-used-p 'company))
         eclim
         eldoc
         ensime
         flycheck
         (flycheck-eclim :location local
-                        :depends flycheck)
+                        :requires flycheck)
         flyspell
         ggtags
         gradle-mode
-        groovy-imports
-        groovy-mode
         helm-gtags
         (java-mode :location built-in)
         (meghanada :toggle (not (version< emacs-version "25.1")))
@@ -113,8 +111,8 @@
         "pu" 'eclim-project-update
         ;; refactor
         "rc" 'eclim-java-constructor
-        "rg" 'eclim-java-generate-getter-and-setter
         "rf" 'eclim-java-format
+        "rg" 'eclim-java-generate-getter-and-setter
         "ri" 'eclim-java-import-organize
         "rj" 'eclim-java-implement
         "rn" 'eclim-java-new
@@ -302,7 +300,7 @@
 ;;       :init
 ;;       (progn
 ;;         (spacemacs//ensime-init 'java-mode t nil)
-;;         (when (configuration-layer/package-usedp 'company)
+;;         (when (configuration-layer/package-used-p 'company)
 ;;           (push 'ensime-company company-backends-java-mode)))
 ;;       :config
 ;;       (progn
@@ -326,15 +324,6 @@
 (defun java/init-gradle-mode ()
   (use-package gradle-mode
     :defer t))
-
-(defun java/init-groovy-imports ()
-  (use-package groovy-imports
-    :defer t))
-
-(defun java/init-groovy-mode ()
-  (use-package groovy-mode
-    :defer t
-    ))
 
 (defun java/post-init-helm-gtags ()
   (spacemacs/helm-gtags-define-keys-for-mode 'java-mode))
