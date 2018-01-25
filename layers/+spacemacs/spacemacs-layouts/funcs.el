@@ -1,6 +1,6 @@
 ;;; funcs.el --- Spacemacs Layouts Layer functions File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -187,6 +187,33 @@ ask the user if a new layout should be created."
   (interactive)
   (call-interactively 'spacemacs/helm-persp-kill)
   (spacemacs/layouts-transient-state/body))
+
+(defun spacemacs/move-element-left (element list)
+  "Move ELEMENT one step to the left in LIST."
+  (let (value)
+    (dolist (name list value)
+      (if (and (equal name element) (car value))
+          (setq value (cons (car value) (cons name (cdr value))))
+        (setq value (cons name value))))
+    (nreverse value)))
+
+(defun spacemacs/move-element-right (element list)
+  "Move ELEMENT one step to the right in LIST."
+  (nreverse (spacemacs/move-element-left element (reverse list))))
+
+(defun spacemacs/move-current-persp-right ()
+  "Moves the current perspective one step to the right"
+  (interactive)
+  (setq persp-names-cache (spacemacs/move-element-right
+                           (spacemacs//current-layout-name)
+                           persp-names-cache)))
+
+(defun spacemacs/move-current-persp-left ()
+  "Moves the current perspective one step to the left"
+  (interactive)
+  (setq persp-names-cache (spacemacs/move-element-left
+                           (spacemacs//current-layout-name)
+                           persp-names-cache)))
 
 
 ;; Custom Persp transient-state
@@ -381,19 +408,24 @@ perspectives does."
 
 
 ;; Ivy integration
+(defun spacemacs/ivy-persp-switch-project-advice (project)
+  (let ((persp-reset-windows-on-nil-window-conf t))
+    (persp-switch project)))
 
 (defun spacemacs/ivy-persp-switch-project (arg)
   (interactive "P")
+  (require 'counsel-projectile)
+  (advice-add 'counsel-projectile-switch-project-action
+              :before #'spacemacs/ivy-persp-switch-project-advice)
   (ivy-read "Switch to Project Perspective: "
             (if (projectile-project-p)
                 (cons (abbreviate-file-name (projectile-project-root))
                       (projectile-relevant-known-projects))
               projectile-known-projects)
-            :action (lambda (project)
-                      (let ((persp-reset-windows-on-nil-window-conf t))
-                        (persp-switch project)
-                        (let ((projectile-completion-system 'ivy))
-                          (projectile-switch-project-by-name project))))))
+            :action counsel-projectile-switch-project-action
+            :caller 'spacemacs/ivy-persp-switch-project)
+  (advice-remove 'counsel-projectile-switch-project-action
+                 'spacemacs/ivy-persp-switch-project-advice))
 
 
 ;; Eyebrowse

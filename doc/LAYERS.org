@@ -496,9 +496,9 @@ instance if a used layer A can shadow a used layer B and the layer A is listed
 after the layer B in the dotfile then the layer A replaces the layer B and it is
 like only the layer A is being used.
 
-Examples of fhis mechanism are helm/ivy layers or neotree/treemacs layers.
+Examples of this mechanism are helm/ivy layers or neotree/treemacs layers.
 
-A layer can shadow other layers by calling in its =config.el= file the function
+A layer can shadow other layers by calling in its =layers.el= file the function
 =configuration-layer/declare-shadow-relation=. This function declares a
 =can-shadow= relation between all the layers.
 
@@ -577,9 +577,8 @@ Since a call to =use-package= may evaluate the =:init= block immediately, any
 function that wants to inject code into this block must run =before= the call to
 =use-package=. Further, since this call to =use-package= typically takes place
 in the =init-<package>= function, calls to =spacemacs|use-package-add-hook=
-typically happen in the =pre-init-<package>= functions, and not in
-=post-init-<package>=. It is quite safe to do this in =pre-init=, so that should
-be the default choice.
+*always* happen in the =pre-init-<package>= functions, and not in
+=post-init-<package>=.
 
 ** Best practices
 If you break any of these rules, you should know what you are doing and have a

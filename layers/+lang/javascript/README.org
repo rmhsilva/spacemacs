@@ -10,6 +10,7 @@
   - [[#tern][Tern]]
   - [[#indentation][Indentation]]
   - [[#repl][REPL]]
+  - [[#node-modules][Node Modules]]
 - [[#key-bindings][Key Bindings]]
   - [[#js2-mode][js2-mode]]
   - [[#folding-js2-mode][Folding (js2-mode)]]
@@ -19,6 +20,7 @@
   - [[#auto-complete-and-documentation-tern][Auto-complete and documentation (tern)]]
   - [[#json][JSON]]
   - [[#repl-skewer-mode][REPL (skewer-mode)]]
+  - [[#coffee-mode][coffee-mode]]
 
 * Description
 This layer adds support for the JavaScript language using [[https://github.com/mooz/js2-mode][js2-mode]].
@@ -91,11 +93,22 @@ such:
   (setq-default js2-basic-offset 2)
 #+END_SRC
 
+or when adding the =javascript= configuration layer:
+#+BEGIN_SRC emacs-lisp
+  (javascript :variables js2-basic-offset 2)
+#+END_SRC
+
+
 Similarly, to change how js-mode indents JSON files, set the variable
 =js-indent-level=, as such:
 
 #+BEGIN_SRC emacs-lisp
   (setq-default js-indent-level 2)
+#+END_SRC
+
+or when adding the =javascript= configuration layer:
+#+BEGIN_SRC emacs-lisp
+  (javascript :variables js-indent-level 2)
 #+END_SRC
 
 ** REPL
@@ -104,6 +117,17 @@ with skewer. If a blank page serves your needs, just use the run-skewer command
 in your javascript buffer. If you want to inject it in your own page, follow
 [[https://github.com/skeeto/skewer-mode#skewering-with-cors][these instructions]] (install the Greasemonkey script and then click the triangle
 in the top-right corner - if it turns green, you're good to go).
+
+** Node Modules
+If you would like =node_modules/.bin= to be automatically added to the buffer
+local =exec_path=, e.g. to support project local eslint installations, set the
+=node-add-modules-path= variable in the =javascript= config section. Note that
+doing this [[https://stackoverflow.com/questions/9679932#comment33532258_9683472][introduces a security risk]]:
+
+#+BEGIN_SRC elisp
+(setq-default dotspacemacs-configuration-layers
+  '((javascript :variables node-add-modules-path t)))
+#+END_SRC
 
 * Key Bindings
 ** js2-mode
@@ -211,3 +235,16 @@ You can check more [[https://github.com/mooz/js-doc/][here]]
 | ~SPC m s r~ | send current region to the skewer REPL                                             |
 | ~SPC m s R~ | send current region to the skewer REPL and switch to it in insert state            |
 | ~SPC m s s~ | switch to REPL                                                                     |
+
+** coffee-mode
+
+| Key Binding | Description                                        |
+|-------------+----------------------------------------------------|
+| ~SPC m '~   | Create or go to REPL                               |
+| ~SPC m c c~ | Compile buffer                                     |
+| ~SPC m c r~ | Compile region                                     |
+| ~SPC m s b~ | Send buffer to REPL                                |
+| ~SPC m s l~ | Send line to REPL                                  |
+| ~SPC m s i~ | Create or go to REPL                               |
+| ~SPC m s r~ | send current region to the REPL and stay in buffer |
+| ~SPC m T c~ | Toggle compile on save                             |

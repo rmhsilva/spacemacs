@@ -1,6 +1,6 @@
 ;;; config.el --- Perl5 Layer config File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Troy Hinckley <troyhinckley@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -10,3 +10,9 @@
 ;;; License: GPLv3
 
 (spacemacs|define-jump-handlers cperl-mode)
+
+(defvar perl5-perltidy-executable "perltidy"
+  "Location of perltidy executable.")
+
+(defvar perl5-perltidy-options '()
+  "Command line options to pass to perltidy")

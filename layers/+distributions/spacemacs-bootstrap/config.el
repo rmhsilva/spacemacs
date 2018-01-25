@@ -1,6 +1,6 @@
 ;;; config.el --- Spacemacs Bootstrap Layer configuration File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -45,3 +45,18 @@
 to a major mode, a list of such symbols, or the symbol t,
 acting as default. The values are either integers, symbols
 or lists of these.")
+
+;; State cursors
+(defvar spacemacs-evil-cursors '(("normal" "DarkGoldenrod2" box)
+                                 ("insert" "chartreuse3" (bar . 2))
+                                 ("emacs" "SkyBlue2" box)
+                                 ("hybrid" "SkyBlue2" (bar . 2))
+                                 ("replace" "chocolate" (hbar . 2))
+                                 ("evilified" "LightGoldenrod3" box)
+                                 ("visual" "gray" (hbar . 2))
+                                 ("motion" "plum3" box)
+                                 ("lisp" "HotPink1" box)
+                                 ("iedit" "firebrick1" box)
+                                 ("iedit-insert" "firebrick1" (bar . 2)))
+  "Colors assigned to evil states with cursor definitions.
+To add your own, use `spacemacs/add-evil-curosr'.")

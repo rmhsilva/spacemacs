@@ -1,6 +1,6 @@
 ;;; packages.el --- Themes Mega-Pack Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -18,7 +18,7 @@
     apropospriate-theme
     anti-zenburn-theme
     ;; contains errors
-    ; badger-theme
+    ;; badger-theme
     badwolf-theme
     birds-of-paradise-plus-theme
     bubbleberry-theme
@@ -95,7 +95,7 @@
     tangotango-theme
     tao-theme
     ;; contains error
-    ; tommyh-theme
+    ;; tommyh-theme
     toxi-theme
     twilight-anti-bright-theme
     twilight-bright-theme
@@ -105,7 +105,6 @@
     white-sand-theme
     zen-and-art-theme
     zenburn-theme
-    zonokai-theme
     ))
 
 ;; define programmatically the init functions

@@ -1,6 +1,6 @@
 ;;; keybindings.el --- Spacemacs Base Layer key-bindings File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -127,6 +127,7 @@
   "bd"    'spacemacs/kill-this-buffer
   "be"    'spacemacs/safe-erase-buffer
   "bh"    'spacemacs/home
+  "bH"    'spacemacs/switch-to-help-buffer
   "b C-d" 'spacemacs/kill-other-buffers
   "b C-S-d" 'spacemacs/kill-matching-buffers-rudely
   "bn"    'next-buffer
@@ -141,6 +142,7 @@
   "bR"    'spacemacs/safe-revert-buffer
   "bs"    'spacemacs/switch-to-scratch-buffer
   "bu"    'spacemacs/reopen-killed-buffer
+  "bx"    'kill-buffer-and-window
   "bY"    'spacemacs/copy-whole-buffer-to-clipboard
   "bw"    'read-only-mode)
 (dotimes (i 9)
@@ -148,7 +150,18 @@
     (spacemacs/set-leader-keys (format "b%i" n)
       (intern (format "buffer-to-window-%s" n)))))
 ;; Cycling settings -----------------------------------------------------------
-(spacemacs/set-leader-keys "Tn" 'spacemacs/cycle-spacemacs-theme)
+(spacemacs|define-transient-state theme
+  :title "Themes Transient State"
+  :doc "\n[_n_/_<right>_] next  [_p_/_<left>_] previous  [_t_/_<up>_] helm-themes"
+  :bindings
+  ("n" spacemacs/cycle-spacemacs-theme)
+  ("p" (spacemacs/cycle-spacemacs-theme 'backward))
+  ("t" helm-themes)
+  ("<up>" helm-themes)
+  ("<right>" spacemacs/cycle-spacemacs-theme)
+  ("<left>" (spacemacs/cycle-spacemacs-theme 'backward)))
+(spacemacs/set-leader-keys "Tn"
+  'spacemacs/theme-transient-state/spacemacs/cycle-spacemacs-theme)
 ;; errors ---------------------------------------------------------------------
 (spacemacs/set-leader-keys
   "en" 'spacemacs/next-error
@@ -191,6 +204,7 @@
   "feD" 'spacemacs/ediff-dotfile-and-template
   "feR" 'dotspacemacs/sync-configuration-layers
   "fev" 'spacemacs/display-and-copy-version
+  "feU"  'configuration-layer/update-packages
   "fCd" 'spacemacs/unix2dos
   "fCu" 'spacemacs/dos2unix
   "fg" 'rgrep
@@ -207,12 +221,12 @@
 ;; frame ----------------------------------------------------------------------
 (spacemacs/set-leader-keys
   "Ff" 'find-file-other-frame
-  "Fc" 'delete-frame
-  "FC" 'delete-other-frames
+  "Fd" 'delete-frame
+  "FD" 'delete-other-frames
   "Fb" 'switch-to-buffer-other-frame
   "FB" 'display-buffer-other-frame
-  "Fd" 'dired-other-frame
   "Fo" 'other-frame
+  "FO" 'dired-other-frame
   "Fn" 'make-frame)
 ;; help -----------------------------------------------------------------------
 (spacemacs/set-leader-keys
@@ -427,14 +441,17 @@
   "wv"  'split-window-right
   "wV"  'split-window-right-and-focus
   "ww"  'other-window
+  "wx"  'kill-buffer-and-window
   "w/"  'split-window-right
   "w="  'balance-windows-area
   "w+"  'spacemacs/window-layout-toggle
-  "w_"  'spacemacs/maximize-horizontally)
+  "w_"  'spacemacs/maximize-horizontally
+  "w|"  'spacemacs/maximize-vertically)
 ;; text -----------------------------------------------------------------------
 (defalias 'count-region 'count-words-region)
 
 (spacemacs/set-leader-keys
+  "xa%" 'spacemacs/align-repeat-percent
   "xa&" 'spacemacs/align-repeat-ampersand
   "xa(" 'spacemacs/align-repeat-left-paren
   "xa)" 'spacemacs/align-repeat-right-paren
@@ -496,15 +513,20 @@
 (spacemacs|define-transient-state buffer
   :title "Buffer Selection Transient State"
   :doc (concat "
- [_C-1_.._C-9_] goto nth window            [_n_]^^   next buffer
- [_1_.._9_]     move buffer to nth window  [_N_/_p_] previous buffer
- [_M-1_.._M-9_] swap buffer w/ nth window  [_d_]^^   kill buffer
- ^^^^                                      [_q_]^^   quit")
+ [_C-1_.._C-9_] goto nth window            [_n_/_<right>_]^^  next buffer       [_b_]   buffer list
+ [_1_.._9_]     move buffer to nth window  [_N_/_p_/_<left>_] previous buffer   [_C-d_] bury buffer
+ [_M-1_.._M-9_] swap buffer w/ nth window  [_d_]^^^^          kill buffer       [_o_]   other window
+ ^^^^                                      [_q_]^^^^          quit")
   :bindings
   ("n" next-buffer)
-  ("N" previous-buffer)
+  ("<right>" next-buffer)
   ("p" previous-buffer)
+  ("N" previous-buffer)
+  ("o" other-window)
+  ("<left>" previous-buffer)
+  ("b" helm-buffers-list)
   ("d" spacemacs/kill-this-buffer)
+  ("C-d" bury-buffer)
   ("q" nil :exit t)
   ("1" move-buffer-window-no-follow-1)
   ("2" move-buffer-window-no-follow-2)

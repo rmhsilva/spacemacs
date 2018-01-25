@@ -1,6 +1,6 @@
 ;;; core-spacemacs.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -12,9 +12,11 @@
 (defconst emacs-start-time (current-time))
 
 (require 'subr-x nil 'noerror)
+(require 'core-emacs-backports)
 (require 'page-break-lines)
 (require 'core-debug)
 (require 'core-command-line)
+(require 'core-configuration-layer)
 (require 'core-dotspacemacs)
 (require 'core-custom-settings)
 (require 'core-release-management)
@@ -79,7 +81,6 @@ the final step of executing code in `emacs-startup-hook'.")
                 ;; instead.
                 evil-want-C-i-jump nil)
   (dotspacemacs/load-file)
-  (require 'core-configuration-layer)
   (dotspacemacs|call-func dotspacemacs/init "Calling dotfile init...")
   (when dotspacemacs-maximized-at-startup
     (unless (frame-parameter nil 'fullscreen)
@@ -99,8 +100,12 @@ the final step of executing code in `emacs-startup-hook'.")
   ;; Note: Loading custom-settings twice is not ideal since they can have side
   ;; effects! Maybe an inhibit variable in Emacs can supress these side effects?
   (spacemacs/initialize-custom-file)
-  (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
-                          "Calling dotfile Emacs custom settings...")
+  ;; Commenting the first load although it is mentioned above that we must do it
+  ;; I don't recall why we must load the custom settings twice and my experiment
+  ;; seems to show that we don't need this double loading process anymore.
+  ;; related issue: https://github.com/syl20bnr/spacemacs/issues/9736
+  ;; (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
+  ;;                         "Calling dotfile Emacs custom settings...")
   (setq dotspacemacs-editing-style (dotspacemacs//read-editing-style-config
                                     dotspacemacs-editing-style))
   (configuration-layer/initialize)

@@ -1,6 +1,6 @@
 ;;; core-themes-support.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -17,6 +17,9 @@
 
 (defvar spacemacs--delayed-user-theme nil
   "Internal variable storing user theme to be installed.")
+
+(defvar spacemacs--cur-theme nil
+  "Internal variable storing currently loaded theme.")
 
 (defface org-kbd
   '((t (:background "LemonChiffon1" :foreground "black" :box
@@ -62,9 +65,15 @@
     (base16-bespin                    . base16-theme)
     (base16-brewer                    . base16-theme)
     (base16-bright                    . base16-theme)
+    (base16-brushtrees                . base16-theme)
+    (base16-brushtrees-dark           . base16-theme)
     (base16-chalk                     . base16-theme)
+    (base16-circus                    . base16-theme)
+    (base16-classic-dark              . base16-theme)
+    (base16-classic-light             . base16-theme)
     (base16-codeschool                . base16-theme)
     (base16-cupcake                   . base16-theme)
+    (base16-cupertino                 . base16-theme)
     (base16-darktooth                 . base16-theme)
     (base16-default-dark              . base16-theme)
     (base16-default-light             . base16-theme)
@@ -77,26 +86,41 @@
     (base16-google-light              . base16-theme)
     (base16-grayscale-dark            . base16-theme)
     (base16-grayscale-light           . base16-theme)
-    (base16-green-screen              . base16-theme)
-    (base16-harmonic16-dark           . base16-theme)
-    (base16-harmonic16-light          . base16-theme)
+    (base16-greenscreen               . base16-theme)
+    (base16-gruvbox-dark-hard         . base16-theme)
+    (base16-gruvbox-dark-medium       . base16-theme)
+    (base16-gruvbox-dark-pale         . base16-theme)
+    (base16-gruvbox-dark-soft         . base16-theme)
+    (base16-gruvbox-light-hard        . base16-theme)
+    (base16-gruvbox-light-medium      . base16-theme)
+    (base16-gruvbox-light-soft        . base16-theme)
+    (base16-harmonic-dark             . base16-theme)
+    (base16-harmonic-light            . base16-theme)
     (base16-hopscotch                 . base16-theme)
-    (base16-ir-black                  . base16-theme)
+    (base16-irblack                   . base16-theme)
     (base16-isotope                   . base16-theme)
     (base16-london-tube               . base16-theme)
     (base16-macintosh                 . base16-theme)
     (base16-marrakesh                 . base16-theme)
     (base16-materia                   . base16-theme)
+    (base16-material-darker           . base16-theme)
+    (base16-material-lighter          . base16-theme)
+    (base16-material-palenight        . base16-theme)
+    (base16-material                  . base16-theme)
+    (base16-mellow-purple             . base16-theme)
     (base16-mexico-light              . base16-theme)
     (base16-mocha                     . base16-theme)
     (base16-monokai                   . base16-theme)
+    (base16-nord                      . base16-theme)
     (base16-ocean                     . base16-theme)
     (base16-oceanicnext               . base16-theme)
     (base16-onedark                   . base16-theme)
+    (base16-one-light                 . base16-theme)
     (base16-paraiso                   . base16-theme)
     (base16-phd                       . base16-theme)
     (base16-pico                      . base16-theme)
     (base16-pop                       . base16-theme)
+    (base16-porple                    . base16-theme)
     (base16-railscasts                . base16-theme)
     (base16-rebecca                   . base16-theme)
     (base16-seti                      . base16-theme)
@@ -115,6 +139,8 @@
     (base16-unikitty-dark             . base16-theme)
     (base16-unikitty-light            . base16-theme)
     (base16-woodland                  . base16-theme)
+    (base16-xcode-dusk                . base16-theme)
+    (base16-zenburn                   . base16-theme)
     (sanityinc-solarized-dark         . color-theme-sanityinc-solarized)
     (sanityinc-solarized-light        . color-theme-sanityinc-solarized)
     (sanityinc-tomorrow-blue          . color-theme-sanityinc-tomorrow)
@@ -171,6 +197,12 @@
     (tao-yang                         . tao-theme)
     (farmhouse-light                  . farmhouse-theme)
     (farmhouse-dark                   . farmhouse-theme)
+    (gruvbox-dark-soft                . gruvbox-theme)
+    (gruvbox-dark-medium              . gruvbox-theme)
+    (gruvbox-dark-hard                . gruvbox-theme)
+    (gruvbox-light-soft               . gruvbox-theme)
+    (gruvbox-light-medium             . gruvbox-theme)
+    (gruvbox-light-hard               . gruvbox-theme)
     )
   "alist matching a theme name with its package name, required when
 package name does not match theme name + `-theme' suffix.")
@@ -244,8 +276,7 @@ THEME."
           (unless (display-graphic-p)
             (eval `(spacemacs|do-after-display-system-init
                     (load-theme ',theme-name t))))
-          (setq-default spacemacs--cur-theme theme-name)
-          (setq-default spacemacs--cycle-themes (cdr dotspacemacs-themes)))
+          (setq-default spacemacs--cur-theme theme-name))
       ('error
        (message "error: %s" err)
        (if fallback-theme
@@ -281,20 +312,22 @@ THEME."
       (eval `(spacemacs|do-after-display-system-init
               (load-theme ',theme-name t))))))
 
-(defun spacemacs/cycle-spacemacs-theme ()
-  "Cycle through themes defined in `dotspacemacs-themes.'"
-  (interactive)
-  (when spacemacs--cur-theme
-    ;; if current theme isn't in cycleable themes, start over
-    (setq spacemacs--cycle-themes
-          (or (cdr (memq spacemacs--cur-theme dotspacemacs-themes))
-              dotspacemacs-themes)))
-  (setq spacemacs--cur-theme (pop spacemacs--cycle-themes))
-  (let ((progress-reporter
-         (make-progress-reporter
-          (format "Loading theme %s..." spacemacs--cur-theme))))
-    (spacemacs/load-theme spacemacs--cur-theme nil 'disable)
-    (progress-reporter-done progress-reporter)))
+(defun spacemacs/cycle-spacemacs-theme (&optional backward)
+  "Cycle through themes defined in `dotspacemacs-themes.'
+When BACKWARD is non-nil, or with universal-argument, cycle backwards."
+  (interactive "P")
+  (let* ((themes (if backward (reverse dotspacemacs-themes) dotspacemacs-themes))
+         (next-theme (car (or (cdr (memq spacemacs--cur-theme themes))
+                              ;; if current theme isn't in cycleable themes, start
+                              ;; over
+                              themes))))
+    (when spacemacs--cur-theme
+      (disable-theme spacemacs--cur-theme))
+    (let ((progress-reporter
+           (make-progress-reporter
+            (format "Loading theme %s..." next-theme))))
+      (spacemacs/load-theme next-theme nil 'disable)
+      (progress-reporter-done progress-reporter))))
 
 (defadvice load-theme (after spacemacs/load-theme-adv activate)
   "Perform post load processing."

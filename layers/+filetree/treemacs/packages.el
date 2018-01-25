@@ -1,6 +1,6 @@
 ;;; packages.el --- treemacs Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -29,18 +29,17 @@
     :init
     (spacemacs/set-leader-keys
       "ft"    #'treemacs-toggle
-      "fT"    #'treemacs
       "fB"    #'treemacs-bookmark
       "f C-t" #'treemacs-find-file)
     :config
     (progn
+      (spacemacs/define-evil-state-face "treemacs" "MediumPurple1")
       (setq treemacs-follow-after-init t
             treemacs-width 35
             treemacs-position 'left
             treemacs-is-never-other-window nil
             treemacs-silent-refresh nil
             treemacs-indentation 2
-            treemacs-git-integration t
             treemacs-change-root-without-asking nil
             treemacs-sorting 'alphabetic-desc
             treemacs-show-hidden-files t
@@ -52,7 +51,13 @@
         (treemacs-follow-mode t))
 
       (when treemacs-use-filewatch-mode
-        (treemacs-filewatch-mode t)))))
+        (treemacs-filewatch-mode t))
+
+      ;; this boundp check guards against a new feature that not all treemacs installations will have
+      ;; TODO remove this guard in a few weeks
+      (when (boundp 'treemacs-git-mode)
+        (when (memq treemacs-use-git-mode '(simple extended))
+          (treemacs-git-mode treemacs-use-git-mode))))))
 
 (defun treemacs/init-treemacs-evil ()
   (use-package treemacs-evil
@@ -70,4 +75,6 @@
 (defun treemacs/pre-init-winum ()
   (spacemacs|use-package-add-hook winum
     :post-config
-    (setq winum-assign-func #'treemacs--window-number-ten)))
+    (progn
+      (spacemacs/set-leader-keys "0" #'treemacs)
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))))

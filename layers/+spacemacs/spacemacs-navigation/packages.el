@@ -1,6 +1,6 @@
 ;;; packages.el --- Spacemacs Navigation Layer packages File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -13,16 +13,17 @@
       '(ace-link
         auto-highlight-symbol
         (centered-cursor :location local)
+        (compile :location built-in)
         (doc-view :location built-in)
         flx-ido
         golden-ratio
-        info+
+        (grep :location built-in)
+        (info+ :location local)
         open-junk-file
         paradox
         restart-emacs
         (smooth-scrolling :location built-in)
         winum))
-
 
 (defun spacemacs-navigation/init-ace-link ()
   (use-package ace-link
@@ -146,6 +147,12 @@
                                    scroll-bar-toolkit-scroll
                                    evil-mouse-drag-region))
       (spacemacs|diminish centered-cursor-mode " ⊝" " -"))))
+
+(defun spacemacs-navigation/init-compile ()
+  (use-package compile
+    :defer t
+    :config
+    (define-key compilation-mode-map "h" nil)))
 
 (defun spacemacs-navigation/init-doc-view ()
   (use-package doc-view
@@ -279,6 +286,12 @@
                    'spacemacs/no-golden-ratio-guide-key)
 
       (spacemacs|diminish golden-ratio-mode " ⓖ" " g"))))
+
+(defun spacemacs-navigation/init-grep ()
+  (use-package grep
+    :defer t
+    :config
+    (define-key grep-mode-map "h" nil)))
 
 (defun spacemacs-navigation/init-info+ ()
   (use-package info+

@@ -1,6 +1,6 @@
 ;;; auto-layer.el --- auto-mode-alist entries for layer installation
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -43,10 +43,11 @@
 (configuration-layer/lazy-install 'html :extensions '("\\(\\.slim\\'\\)" slim-mode))
 (configuration-layer/lazy-install 'html :extensions '("\\(\\.phtml\\'\\|\\.tpl\\.php\\'\\|\\.twig\\'\\|\\.html\\'\\|\\.htm\\'\\|\\.[gj]sp\\'\\|\\.as[cp]x?\\'\\|\\.eex\\'\\|\\.erb\\'\\|\\.mustache\\'\\|\\.handlebars\\'\\|\\.hbs\\'\\|\\.eco\\'\\|\\.ejs\\'\\|\\.djhtml\\'\\)" web-mode))
 (configuration-layer/lazy-install 'idris :extensions '("\\(\\.idr$\\|\\.lidr$\\)" idris-mode))
-;; java
+;; javascript
 (configuration-layer/lazy-install 'javascript :extensions '("\\(\\.coffee\\'\\|\\.iced\\'\\|Cakefile\\'\\|\\.cson\\'\\)" coffee-mode))
 (configuration-layer/lazy-install 'javascript :extensions '("\\(\\.js\\'\\)" js2-mode))
 (configuration-layer/lazy-install 'javascript :extensions '("\\(\\.json$\\)" json-mode))
+(configuration-layer/lazy-install 'react :extensions '("\\(\\.jsx$\\)" react-mode))
 ;; latex
 (configuration-layer/lazy-install 'lua :extensions '("\\(\\.lua$\\|\\.lua\\'\\)" lua-mode))
 (configuration-layer/lazy-install 'nginx :extensions '("\\(nginx\\.conf\\'\\|/nginx/.+\\.conf\\'\\)" nginx-mode))

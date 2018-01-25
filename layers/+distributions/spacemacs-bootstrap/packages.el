@@ -1,6 +1,6 @@
 ;;; packages.el --- Mandatory Bootstrap Layer packages File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -57,30 +57,8 @@
 
   (require 'cl)
   ;; State cursors
-  (defvar spacemacs-evil-cursors '(("normal" "DarkGoldenrod2" box)
-                                   ("insert" "chartreuse3" (bar . 2))
-                                   ("emacs" "SkyBlue2" box)
-                                   ("hybrid" "SkyBlue2" (bar . 2))
-                                   ("replace" "chocolate" (hbar . 2))
-                                   ("evilified" "LightGoldenrod3" box)
-                                   ("visual" "gray" (hbar . 2))
-                                   ("motion" "plum3" box)
-                                   ("lisp" "HotPink1" box)
-                                   ("iedit" "firebrick1" box)
-                                   ("iedit-insert" "firebrick1" (bar . 2)))
-    "Colors assigned to evil states with cursor definitions.")
-
-  (cl-loop for (state color cursor) in spacemacs-evil-cursors
-           do
-           (eval `(defface ,(intern (format "spacemacs-%s-face" state))
-                    `((t (:background ,color
-                                      :foreground ,(face-background 'mode-line)
-                                      :inherit 'mode-line)))
-                    (format "%s state face." state)
-                    :group 'spacemacs))
-           (set (intern (format "evil-%s-state-cursor" state))
-                (list (when dotspacemacs-colorize-cursor-according-to-state color)
-                      cursor)))
+  (cl-loop for (state color shape) in spacemacs-evil-cursors
+           do (spacemacs/add-evil-cursor state color shape))
   (add-hook 'spacemacs-post-theme-change-hook 'spacemacs/set-state-faces)
 
   ;; evil ex-command
@@ -492,6 +470,7 @@
         which-key-max-description-length 32
         which-key-sort-order 'which-key-key-order-alpha
         which-key-idle-delay dotspacemacs-which-key-delay
+        which-key-idle-secondary-delay 0.01
         which-key-allow-evil-operators t)
 
   (which-key-mode)
