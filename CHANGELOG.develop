@@ -76,11 +76,17 @@ This file containes the change log for the next major version of Spacemacs.
   - Avoid importing already defined variables (except `PATH`/`MANPATH`).
 - Move all scrolling key bindings from ~SPC n~ to ~SPC N~ (Somelauw)
 - Overhaul the scroll transient state on ~SPC N~ prefix (Somelauw)
+- Use Helm or Ivy (if one of these is enabled) for ~SPC a d~ (=dired=),
+  ~SPC F f~ (=find-file-other-frame=), ~SPC F b~ (=switch-to-buffer-other-frame=),
+  ~SPC F B~ (=display-buffer-other-frame=), and ~SPC F O~ (=dired-other-frame=).
+- New key binding ~SPC f i~ for =insert-file=.
 *** Layer changes
 **** GitHub
 - Add new package =magithub=
 - Remove package =github-browse-file= which has been replaced by
   =browse-at-remote= in =version-control= layer
+**** Git
+- install magit-svn by default and activate with git-enable-magit-svn-plugin
 **** Gtags
 - Move key binding ~SPC m g c~ to ~SPC m g C~ (regenerate tags)
 **** Java
@@ -104,5 +110,8 @@ This file containes the change log for the next major version of Spacemacs.
 - Move key bindings prefix to ~SPC a V~ (deb0ch)
 **** Version-control
 - Add package =browse-at-remote= which replaces =github-browse-file= (thanks JAremko)
+**** C-C++
+- Add possible value =no-completion= to =c-c++-enable-rtags-support= flag.
+  This adds the option to opt-out of =company-rtags= while enabling Rtags.
 *** Various improvements
 - Various documentation improvements (thanks Carl Lange, Diego Berrocal, Wieland Hoffmann)

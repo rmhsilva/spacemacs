@@ -45,3 +45,14 @@ Possible values are `on-visit', `on-project-switch' or `nil'.")
 
 (defvar python-sort-imports-on-save nil
   "If non-nil, automatically sort imports on save.")
+
+(defvar spacemacs--python-pyenv-modes nil
+  "List of major modes where to add pyenv support.")
+
+(defvar spacemacs--python-pyvenv-modes nil
+  "List of major modes where to add pyvenv support.")
+
+;; inferior-python-mode needs these variables to be defined.  The python
+;; package declares them but does not initialize them.
+(defvar python-shell--interpreter nil)
+(defvar python-shell--interpreter-args nil)

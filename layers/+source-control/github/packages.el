@@ -15,8 +15,7 @@
         github-clone
         github-search
         magit-gh-pulls
-        ;; disabled for now, waiting for the new implementation of the project
-        ;; magithub
+        magithub
         ;; this package does not exits, we need it to wrap
         ;; the call to spacemacs/declare-prefix.
         (spacemacs-github :location built-in)
@@ -82,7 +81,6 @@
 
 (defun github/init-magithub ()
   (use-package magithub
-    :defer t
     :after magit
     :init
     (setq magithub-dir (concat spacemacs-cache-directory "magithub/"))

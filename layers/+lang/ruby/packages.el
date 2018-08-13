@@ -33,6 +33,7 @@
         ruby-test-mode
         ruby-tools
         rvm
+        seeing-is-believing
         smartparens
         rake
         ))
@@ -57,7 +58,7 @@
       :modes ruby-mode enh-ruby-mode))
   (with-eval-after-load 'company-dabbrev-code
     (dolist (mode '(ruby-mode enh-ruby-mode))
-      (push mode company-dabbrev-code-modes))))
+      (add-to-list 'company-dabbrev-code-modes mode))))
 
 (defun ruby/init-chruby ()
   (use-package chruby
@@ -124,9 +125,17 @@
     :post-config (add-to-list 'org-babel-load-languages '(ruby . t))))
 
 (defun ruby/post-init-popwin ()
-  (push '("*rspec-compilation*" :dedicated t :position bottom :stick t :noselect t :height 0.4)
+  (push '("*Bundler*" :dedicated t :position bottom :stick t :noselect t :height 0.4)
+        popwin:special-display-config)
+  (push '("*projectile-rails-compilation*" :dedicated t :position bottom :stick t :noselect t :height 0.4)
+        popwin:special-display-config)
+  (push '("*projectile-rails-generate*" :dedicated t :position bottom :stick t :noselect t :height 0.4)
         popwin:special-display-config)
   (push '("*rake-compilation*" :dedicated t :position bottom :stick t :noselect t :height 0.4)
+        popwin:special-display-config)
+  (push '("*rspec-compilation*" :dedicated t :position bottom :stick t :noselect t :height 0.4)
+        popwin:special-display-config)
+  (push '("^\\*RuboCop.+\\*$" :regexp t :dedicated t :position bottom :stick t :noselect t :height 0.4)
         popwin:special-display-config))
 
 (defun ruby/init-rbenv ()
@@ -161,9 +170,12 @@
           "rsr" 'robe-rails-refresh
           ;; inf-enh-ruby-mode
           "sb" 'ruby-send-buffer
+          "sB" 'ruby-send-buffer-and-go
           "sf" 'ruby-send-definition
           "sF" 'ruby-send-definition-and-go
           "si" 'robe-start
+          "sl" 'ruby-send-line
+          "sL" 'ruby-send-line-and-go
           "sr" 'ruby-send-region
           "sR" 'ruby-send-region-and-go
           "ss" 'ruby-switch-to-inf)))))
@@ -223,12 +235,13 @@
     :init
     (progn
       (spacemacs/declare-prefix-for-mode 'ruby-mode "mt" "ruby/test")
+      (spacemacs/declare-prefix-for-mode 'ruby-mode "mT" "ruby/toggle")
       (spacemacs/add-to-hooks
        'spacemacs/ruby-maybe-highlight-debugger-keywords
        '(ruby-mode-local-vars-hook enh-ruby-mode-local-vars-hook)))
     :config (spacemacs/set-leader-keys-for-major-mode 'ruby-mode
-              "'" 'ruby-toggle-string-quotes
-              "{" 'ruby-toggle-block)))
+              "T'" 'ruby-toggle-string-quotes
+              "T{" 'ruby-toggle-block)))
 
 (defun ruby/init-ruby-hash-syntax ()
   (use-package ruby-hash-syntax
@@ -318,3 +331,18 @@
                 "kr"    'rake-rerun
                 "kR"    'rake-regenerate-cache
                 "kf"    'rake-find-task))))
+
+(defun ruby/init-seeing-is-believing ()
+  (use-package seeing-is-believing
+    :defer t
+    :commands (seeing-is-believing seeing-is-believing-run seeing-is-believing-clear)
+    :if (executable-find "seeing_is_believing")
+    :init
+    (progn
+      (spacemacs|diminish seeing-is-believing " 👁" " @")
+      (dolist (hook '(ruby-mode-hook enh-ruby-mode-hook))
+        (add-hook hook 'seeing-is-believing))
+      (dolist (mode '(ruby-mode enh-ruby-mode))
+        (spacemacs/set-leader-keys-for-major-mode mode
+          "@@" 'seeing-is-believing-run
+          "@c" 'seeing-is-believing-clear)))))

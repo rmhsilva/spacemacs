@@ -3,7 +3,6 @@
         arduino-mode
         (ebuild-mode :location (recipe :fetcher github :repo "emacsmirror/ebuild-mode"))
         (hoon-mode :location (recipe :fetcher github :repo "urbit/hoon-mode.el"))
-        julia-mode
         kivy-mode
         (logcat :location (recipe :fetcher github :repo "dcolascione/logcat-mode"))
         matlab-mode
@@ -14,9 +13,7 @@
         thrift
         vala-mode
         (vala-snippets :requires yasnippet)
-        ;; removed from MELPA (https://github.com/syl20bnr/spacemacs/issues/9795)
-        ;; TODO re-enable this mode when it is added back to MELPA
-        ;; wolfram-mode
+        wolfram-mode
         ))
 
 (defun major-modes/init-arduino-mode ())
@@ -33,8 +30,6 @@
         "a" 'ebuild-run-echangelog))))
 
 (defun major-modes/init-hoon-mode ())
-
-(defun major-modes/init-julia-mode ())
 
 (defun major-modes/init-logcat ()
   (use-package logcat
