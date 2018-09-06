@@ -17,7 +17,6 @@
 (defun spacemacs//go-setup-backend ()
   "Conditionally setup go backend"
   (pcase go-backend
-    ('go-mode (spacemacs//go-setup-backend-go-mode))
     ('lsp (spacemacs//go-setup-backend-lsp))))
 
 (defun spacemacs//go-setup-company ()
@@ -25,9 +24,6 @@
   (pcase go-backend
     ('go-mode (spacemacs//go-setup-company-go))
     ('lsp (spacemacs//go-setup-company-lsp))))
-
-(defun spacemacs//go-setup-backend-go-mode ()
-  (company-go))
 
 (defun spacemacs//go-setup-company-go ()
   (spacemacs|add-company-backends
@@ -67,6 +63,16 @@
                                       go-test
                                       go-errcheck))
    (flycheck-gometalinter-setup))
+
+(defun spacemacs//go-enable-golangci-lint ()
+  "Enable `flycheck-golangci-lint' and disable overlapping `flycheck' linters."
+  (setq flycheck-disabled-checkers '(go-gofmt
+                                     go-golint
+                                     go-vet
+                                     go-build
+                                     go-test
+                                     go-errcheck))
+  (flycheck-golangci-lint-setup))
 
 (defun spacemacs/go-run-tests (args)
   (interactive)
