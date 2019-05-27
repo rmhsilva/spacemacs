@@ -1,8 +1,10 @@
 #+TITLE: C/C++ layer
 
+#+TAGS: general|layer|multi-paradigm|programming
+
 [[file:img/ccpp.jpg]]
 
-* Table of Contents                     :TOC_4_gh:noexport:
+* Table of Contents                     :TOC_5_gh:noexport:
 - [[#description][Description]]
   - [[#features][Features:]]
 - [[#install][Install]]
@@ -15,7 +17,14 @@
     - [[#cquery--ccls-lsp-backends][cquery / ccls (lsp backends)]]
       - [[#features-1][Features:]]
       - [[#external-dependencies-1][External dependencies]]
+        - [[#cquery-server][cquery server]]
+        - [[#ccls-server][ccls server]]
       - [[#configuration-1][Configuration]]
+        - [[#basic][Basic]]
+        - [[#setting-path-to-backend-executable][Setting path to backend executable]]
+        - [[#semantic-highlighting][Semantic highlighting]]
+        - [[#additional-configuration-options][Additional configuration options]]
+        - [[#example-dotspacemacs-configuration-layers-entry][Example dotspacemacs-configuration-layers entry]]
       - [[#completion][Completion]]
       - [[#debugger-dap-integration][Debugger (dap integration)]]
   - [[#clang-configuration][Clang Configuration]]
@@ -167,7 +176,7 @@ specifying an explicit =c-c++-lsp-cache-dir=. Setting this value to a relative p
 subdirectory of your project root.
 
 There are other initialization options such as the number of indexer threads, cache serialization format.
-They have good default values. See =config.el= of the layer and the backends’ respective homepages for more info.
+They have good default values. See =config.el= of the layer and the backends' respective homepages for more info.
 - [[https://github.com/cquery-project/cquery/wiki/Emacs][Emacs section of =cquery= wiki]]
 - [[https://github.com/MaskRay/ccls/wiki/Emacs][Emacs section of =ccls= wiki]]
 
@@ -221,7 +230,7 @@ to load a projects =.clang_complete= file, which is just a text file with one
 clang flag per line, a format also used by other text editor clang plugins.
 
 Not only does this allow proper autocomplete on projects with extra includes and
-flags, but there is also support for flycheck so that it doesn’t complain about
+flags, but there is also support for flycheck so that it doesn't complain about
 missing header files.
 
 ** Enable google-set-c-style
@@ -229,8 +238,8 @@ If you have clang enabled with =clang-format= as described earlier in this page
 you may not have a lot of neeed for =google-set-c-style= if you are already
 using a mode based on Google mode for most of your projects.
 
-However, if you don’t have (or want) =clang-format=, or if you have to do a lot
-[[https://www.emacswiki.org/emacs/TrampMode][Tramp]] remote editing on systems that don’t have =clang-format= installed, you
+However, if you don't have (or want) =clang-format=, or if you have to do a lot
+[[https://www.emacswiki.org/emacs/TrampMode][Tramp]] remote editing on systems that don't have =clang-format= installed, you
 may want =google-c-style= enabled and added to your common hooks.
 
 To get =google-c-style= actually install itself into your C/C++ common hooks,

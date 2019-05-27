@@ -1,8 +1,10 @@
 #+TITLE: Python layer
 
+#+TAGS: general|layer|multi-paradigm|programming
+
 [[file:img/python.png]]
 
-* Table of Contents                     :TOC_4_gh:noexport:
+* Table of Contents                     :TOC_5_gh:noexport:
 - [[#description][Description]]
   - [[#features][Features:]]
 - [[#install][Install]]
@@ -106,7 +108,7 @@ issue]] for details.
 
 Source: [[https://github.com/proofit404/anaconda-mode#issues]]
 
-If you are facing errors such as “Unable to run anaconda-mode server”, try
+If you are facing errors such as "Unable to run anaconda-mode server", try
 setting your =PYTHONPATH= as explained at
 [[https://github.com/proofit404/anaconda-mode#pythonpath]]
 
@@ -126,8 +128,8 @@ Additionally you can install the following other packages:
   pip install pyls-mypy
 #+END_SRC
 
-If you’ve installed the language server and related packages as development
-dependencies in a pipenv environment, you’ll want to set the ~python-pipenv-activate~
+If you've installed the language server and related packages as development
+dependencies in a pipenv environment, you'll want to set the ~python-pipenv-activate~
 config variable to ~t~. This activates your pipenv before enabling the
 lsp backend.
 
