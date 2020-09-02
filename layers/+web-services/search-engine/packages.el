@@ -23,7 +23,7 @@
     :init
     (progn
       (spacemacs/set-leader-keys
-        "a/" 'spacemacs/search-engine-select)
+        "aw/" 'spacemacs/search-engine-select)
       (setq search-engine-alist
             `((amazon
                :name "Amazon"
@@ -97,6 +97,9 @@
               (wolfram-alpha
                :name "Wolfram Alpha"
                :url "https://www.wolframalpha.com/input/?i=%s")
+              (ctan
+               :name "CTAN"
+               :url "https://ctan.org/search?phrase=%s")
               ,@search-engine-config-list))
       (dolist (engine search-engine-alist)
         (let ((func (intern (format "engine/search-%S" (car engine)))))
