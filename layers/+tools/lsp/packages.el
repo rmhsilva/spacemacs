@@ -1,6 +1,6 @@
 ;;; packages.el --- Language Server Protocol Layer packages file for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Fangrui Song <i@maskray.me>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -27,9 +27,8 @@
       (spacemacs/lsp-bind-keys)
       (setq lsp-prefer-capf t)
       (add-hook 'lsp-after-open-hook (lambda ()
-                                       "Setup xref jump handler and declare keybinding prefixes"
-                                       (spacemacs//setup-lsp-jump-handler)
-                                       (spacemacs//lsp-declare-prefixes-for-mode major-mode))))))
+                                       "Setup xref jump handler"
+                                       (spacemacs//setup-lsp-jump-handler))))))
 
 (defun lsp/init-lsp-ui ()
   (use-package lsp-ui
