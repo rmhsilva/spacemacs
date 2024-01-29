@@ -1,8 +1,8 @@
-;;; layers.el --- GitHub layer layers File for Spacemacs
+;;; funcs.el --- Semantic Layer functions File for Spacemacs
 ;;
-;; Copyright (c) 2012-2021 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2024 Sylvain Benner & Contributors
 ;;
-;; Author: Sylvain Benner <sylvain.benner@gmail.com>
+;; Author: Ray Wang <rayw.public@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
 ;;
 ;; This file is not part of GNU Emacs.
@@ -20,6 +20,10 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
-(configuration-layer/declare-layer-dependencies '(version-control))
+(spacemacs/set-leader-keys
+  "atTt" 'translate-mode
+  "atTp" 'translate/translate-current-reference-paragraph
+  "atTw" 'translate/translate-word-at-point
+  "atTf" 'translate-open-reference-file
+  "atTb" 'translate-select-reference-buffer
+  "atTh" 'translate-toggle-highlight)

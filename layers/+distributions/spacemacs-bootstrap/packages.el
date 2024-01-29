@@ -1,6 +1,6 @@
 ;;; packages.el --- Mandatory Bootstrap Layer packages File
 ;;
-;; Copyright (c) 2012-2021 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2024 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -36,9 +36,9 @@
     ;; pre packages, initialized after the bootstrap packages
     ;; these packages can use use-package
     (dotenv-mode :step pre)
-    (evil-evilified-state :location local :step pre :protected t)
+    (evil-evilified-state :location (recipe :fetcher local) :step pre :protected t)
     (pcre2el :step pre)
-    (holy-mode :location local :step pre)
+    (holy-mode :location (recipe :fetcher local) :step pre)
     (hybrid-mode :location (recipe :fetcher local) :step pre)
     (spacemacs-theme :location built-in)
     dash))
@@ -145,6 +145,9 @@
     (define-key evil-visual-state-map "J" 'drag-stuff-down)
     (define-key evil-visual-state-map "K" 'drag-stuff-up))
 
+  (when vim-style-enable-undo-region
+    (define-key evil-visual-state-map (kbd "u") 'undo))
+
   (evil-ex-define-cmd "enew" 'spacemacs/new-empty-buffer)
 
   (define-key evil-normal-state-map (kbd "K") 'spacemacs/evil-smart-doc-lookup)
@@ -226,9 +229,11 @@
   (spacemacs|define-transient-state paste
     :title "Pasting Transient State"
     :doc "\n[%s(length kill-ring-yank-pointer)/%s(length kill-ring)] \
- [_C-j_/_C-k_] cycles through yanked text, [_p_/_P_] pastes the same text \
- above or below. Anything else exits."
+ [_C-j_/_C-k_] cycles through yanked text, [_p_/_P_] pastes the \
+ same text above or below, [_C-v_] creates a visual selection \
+ from last paste and exits. Anything else exits."
     :bindings
+    ("C-v" (evil-active-region) :exit t)
     ("C-j" evil-paste-pop)
     ("C-k" evil-paste-pop-next)
     ("p" evil-paste-after)
@@ -303,13 +308,13 @@
       (cond ((configuration-layer/layer-used-p 'helm) 'spacemacs/helm-find-files)
             ((configuration-layer/layer-used-p 'ivy) 'spacemacs/counsel-find-file))))
 
-  ;; support smart 1parens-strict-mode
+  ;; support smartparens-strict-mode
   (when (configuration-layer/package-used-p 'smartparens)
-    (defadvice evil-delete-backward-char-and-join
-        (around spacemacs/evil-delete-backward-char-and-join activate)
+    (define-advice evil-delete-backward-char-and-join
+        (:around (f &rest args) spacemacs/evil-delete-backward-char-and-join)
       (if (bound-and-true-p smartparens-strict-mode)
           (call-interactively 'sp-backward-delete-char)
-        ad-do-it)))
+        (apply f args))))
 
   ;; Define history commands for comint
   (when (eq dotspacemacs-editing-style 'vim)
@@ -330,13 +335,7 @@
         hydra-head-format "[%s] "))
 
 (defun spacemacs-bootstrap/init-use-package ()
-  (require 'use-package)
-  (setq use-package-verbose init-file-debug
-        ;; inject use-package hooks for easy customization of stock package
-        ;; configuration
-        use-package-inject-hooks t)
-  (add-to-list 'use-package-keywords :spacebind t)
-  (add-to-list 'use-package-keywords :spacediminish t))
+  (spacemacs/use-package-extend))
 
 (defun spacemacs-bootstrap/init-which-key ()
   (require 'which-key)
@@ -602,42 +601,40 @@ Press \\[which-key-toggle-persistent] to hide."
     (use-package holy-mode
       :commands holy-mode
       :init
-      (progn
-        (when (eq 'emacs dotspacemacs-editing-style)
-          (holy-mode))
-        (spacemacs|add-toggle holy-mode
-          :status holy-mode
-          :on (progn (when (bound-and-true-p hybrid-mode)
-                       (hybrid-mode -1)
-                       (spacemacs/declare-prefix "tEh" "hybrid (hybrid-mode)"))
-                     (holy-mode)
-                     (spacemacs/declare-prefix "tEe" "vim (evil-mode"))
-          :off (progn (holy-mode -1)
-                      (spacemacs/declare-prefix "tEe" "emacs (holy-mode)"))
-          :off-message "evil-mode enabled."
-          :documentation "Globally toggle holy mode."
-          :evil-leader "tEe")
-        (spacemacs|diminish holy-mode " Ⓔe" " Ee")))))
+      (when (eq 'emacs dotspacemacs-editing-style)
+        (holy-mode))
+      (spacemacs|add-toggle holy-mode
+        :status holy-mode
+        :on (progn (when (bound-and-true-p hybrid-mode)
+                     (hybrid-mode -1)
+                     (spacemacs/declare-prefix "tEh" "hybrid (hybrid-mode)"))
+                   (holy-mode)
+                   (spacemacs/declare-prefix "tEe" "vim (evil-mode"))
+        :off (progn (holy-mode -1)
+                    (spacemacs/declare-prefix "tEe" "emacs (holy-mode)"))
+        :off-message "evil-mode enabled."
+        :documentation "Globally toggle holy mode."
+        :evil-leader "tEe")
+      (spacemacs|diminish holy-mode " Ⓔe" " Ee"))))
 
 (defun spacemacs-bootstrap/init-hybrid-mode ()
   (spacemacs|unless-dumping-and-eval-after-loaded-dump hybrid-mode
     (use-package hybrid-mode
       :config
-      (progn
-        (when (eq 'hybrid dotspacemacs-editing-style) (hybrid-mode))
-        (spacemacs|add-toggle hybrid-mode
-          :status hybrid-mode
-          :on (progn (when (bound-and-true-p holy-mode)
-                       (holy-mode -1)
-                       (spacemacs/declare-prefix "tEe" "emacs (holy-mode)"))
-                     (hybrid-mode)
-                     (spacemacs/declare-prefix "tEh" "vim (evil-mode)"))
-          :off (progn (hybrid-mode -1)
-                      (spacemacs/declare-prefix "tEh" "hybrid (hybrid-mode)"))
-          :off-message "evil-mode enabled."
-          :documentation "Globally toggle hybrid mode."
-          :evil-leader "tEh")
-        (spacemacs|diminish hybrid-mode " Ⓔh" " Eh")))))
+      (when (eq 'hybrid dotspacemacs-editing-style) (hybrid-mode))
+      (spacemacs|add-toggle hybrid-mode
+        :status hybrid-mode
+        :on (progn (when (bound-and-true-p holy-mode)
+                     (holy-mode -1)
+                     (spacemacs/declare-prefix "tEe" "emacs (holy-mode)"))
+                   (hybrid-mode)
+                   (spacemacs/declare-prefix "tEh" "vim (evil-mode)"))
+        :off (progn (hybrid-mode -1)
+                    (spacemacs/declare-prefix "tEh" "hybrid (hybrid-mode)"))
+        :off-message "evil-mode enabled."
+        :documentation "Globally toggle hybrid mode."
+        :evil-leader "tEh")
+      (spacemacs|diminish hybrid-mode " Ⓔh" " Eh"))))
 
 (defun spacemacs-bootstrap/init-spacemacs-theme ()
   (use-package spacemacs-theme

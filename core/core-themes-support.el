@@ -1,6 +1,6 @@
-;;; core-themes-support.el --- Spacemacs Core File
+;;; core-themes-support.el --- Spacemacs Core File -*- lexical-binding: t -*-
 ;;
-;; Copyright (c) 2012-2021 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2024 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -193,6 +193,7 @@
     (doom-city-lights                 . doom-themes)
     (doom-dark+                       . doom-themes)
     (doom-dracula                     . doom-themes)
+    (doom-earl-grey                   . doom-themes)
     (doom-ephemeral                   . doom-themes)
     (doom-fairy-floss                 . doom-themes)
     (doom-gruvbox                     . doom-themes)
@@ -222,6 +223,7 @@
     (doom-solarized-light             . doom-themes)
     (doom-sourcerer                   . doom-themes)
     (doom-spacegrey                   . doom-themes)
+    (doom-tokyo-night                 . doom-themes)
     (doom-tomorrow-day                . doom-themes)
     (doom-tomorrow-night              . doom-themes)
     (doom-vibrant                     . doom-themes)
@@ -229,11 +231,11 @@
     (doom-xcode                       . doom-themes)
     (doom-zenburn                     . doom-themes)
     (dorsey                           . sublime-themes)
-    (eziam-dark                       . eziam-theme)
-    (eziam-dusk                       . eziam-theme)
-    (eziam-light                      . eziam-theme)
-    (farmhouse-dark                   . farmhouse-theme)
-    (farmhouse-light                  . farmhouse-theme)
+    (eziam-dark                       . eziam-themes)
+    (eziam-dusk                       . eziam-themes)
+    (eziam-light                      . eziam-themes)
+    (farmhouse-dark                   . farmhouse-themes)
+    (farmhouse-light                  . farmhouse-themes)
     (fogus                            . sublime-themes)
     (graham                           . sublime-themes)
     (granger                          . sublime-themes)
@@ -259,8 +261,8 @@
     (kaolin-temple                    . kaolin-themes)
     (kaolin-valley-dark               . kaolin-themes)
     (kaolin-valley-light              . kaolin-themes)
-    (majapahit-dark                   . majapahit-theme)
-    (majapahit-light                  . majapahit-theme)
+    (majapahit-dark                   . majapahit-themes)
+    (majapahit-light                  . majapahit-themes)
     (material-light                   . material-theme)
     (mccarthy                         . sublime-themes)
     (minimal-light                    . minimal-theme)
@@ -432,14 +434,10 @@ When BACKWARD is non-nil, or with universal-argument, cycle backwards."
   (interactive)
   (spacemacs/cycle-spacemacs-theme t))
 
-(defadvice load-theme (after spacemacs/load-theme-adv activate)
+(define-advice load-theme (:after (theme &rest _) spacemacs/load-theme-adv)
   "Perform post load processing."
-  (let ((theme (ad-get-arg 0)))
-    ;; Without this a popup is raised every time emacs25 starts up for
-    ;; assignment to a free variable
-    (with-no-warnings
-      (setq spacemacs--cur-theme theme))
-    (spacemacs/post-theme-init theme)))
+  (setq spacemacs--cur-theme theme)
+  (spacemacs/post-theme-init theme))
 
 (defun spacemacs/theme-loader ()
   "Call appropriate theme loader based on completion framework."
